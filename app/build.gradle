@@ -21,10 +21,10 @@ android {
 
         manifestPlaceholders = [
                 JPUSH_PKGNAME : applicationId, //JPush上注册的包名.
-                JPUSH_APPKEY : "7f489d5772f540279def6658", //JPush上注册的包名对应的appkey.
-                JPUSH_CHANNEL : "消息提示", //暂时填写默认值即可.
+                JPUSH_APPKEY : "8e26b2df5578286abecb8d74", //JPush上注册的包名对应的appkey.
+                //JPUSH_CHANNEL : "消息提示", //暂时填写默认值即可.
                 JPUSH_CHANNEL : "developer-default", //暂时填写默认值即可.
-                HUAWEI_APPID:"101500341",//华为平台注册的appid
+                HUAWEI_APPID:"100785351",//华为平台注册的appid
                 XIAOMI_APPKEY:"MI-5171800290217",//小米平台注册的appkey
                 XIAOMI_APPID:"MI-2882303761518002217",//小米平台注册的appid
                 MEIZU_APPKEY:"MZ-fa1c5ef15de34a41a224e28f49011b18",//魅族平台注册的appkey
@@ -32,7 +32,7 @@ android {
                 VIVO_APPKEY : "292661b2-f21d-4953-be21-389839bce2cd", // VIVO平台注册的appkey
                 VIVO_APPID : "12265", // VIVO平台注册的appid
                 OPPO_APPKEY : "OP-b39c2365b2e845718ee77b1347b07797", // OPPO平台注册的appkey
-                OPPO_APPID : "OP-30078887", // OPPO平台注册的appid
+                OPPO_APPID : "OP-3007888", // OPPO平台注册的appid
                 OPPO_APPSECRET: "OP-b615be824ca14151841d66bf3f26d847",//OPPO平台注册的appsecret
                 qqappid: "tencent101590782",
         ]

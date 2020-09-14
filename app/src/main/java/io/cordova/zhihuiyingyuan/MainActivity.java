@@ -470,12 +470,14 @@ public class MainActivity extends BaseActivity3 implements PermissionsUtil.IPerm
                                     if(memberSign == null){
                                         memberSign = "";
                                     }
-                                    if(!memberSign.equals("1")){
-                                        Intent intent = new Intent(MainActivity.this, ChangeUpdatePwdWebActivity.class);
-                                        intent.putExtra("appUrl", UrlRes.HOME2_URL+ UrlRes.changePwdUrl2);
-                                        //intent.putExtra("appUrl", "http://192.168.30.68:8084/authentication/authentication/views/appNative/changePwd_kfdx.html");
-                                        startActivity(intent);
+                                    if(!memberSign.equals("")){
+                                        if(!memberSign.equals("1")){
+                                            Intent intent = new Intent(MainActivity.this, ChangeUpdatePwdWebActivity.class);
+                                            intent.putExtra("appUrl", UrlRes.HOME2_URL+ UrlRes.changePwdUrl2);
+                                            startActivity(intent);
+                                        }
                                     }
+
                                     StringBuilder sb = new StringBuilder();
                                     if(userMsgBean.getObj().getModules().getRolecodes()!= null){
 

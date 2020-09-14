@@ -3,7 +3,7 @@
     android:initialLayout="@layout/new_app_widget"
     android:minHeight="130dp"
     android:minWidth="400dp"
-    android:previewImage="@drawable/icon"
+    android:previewImage="@drawable/logo"
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="1800000"
     android:widgetCategory="home_screen|keyguard"></appwidget-provider>

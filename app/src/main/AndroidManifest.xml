@@ -82,9 +82,9 @@
     <application
         android:name=".utils.MyApp"
         android:allowBackup="true"
-        android:icon="@drawable/icon"
+        android:icon="@drawable/logo"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/icon"
+        android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup,android:icon,android:roundIcon">
@@ -103,7 +103,7 @@
             android:process=":remote">
         </service>
 
-        <!--<activity
+        <activity
             android:name=".activity.SplashActivity"
             android:exported="true"
             android:screenOrientation="portrait"
@@ -127,47 +127,47 @@
             <meta-data
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
-        </activity>-->
-
-        <activity
-            android:name=".activity.SplashActivity"
-            android:screenOrientation="portrait"
-            android:enabled="true"
-            android:theme="@style/SplashTheme">
         </activity>
 
-        <activity-alias
-            android:name=".icon_tag"
-            android:enabled="false"
-            android:icon="@drawable/icon"
-            android:label="@string/app_name"
-            android:targetActivity=".activity.SplashActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.shortcuts"
-                android:resource="@xml/shortcuts" />
-        </activity-alias>
+        <!--  <activity
+             android:name=".activity.SplashActivity"
+             android:screenOrientation="portrait"
+             android:enabled="true"
+             android:theme="@style/SplashTheme">
+         </activity>
 
         <activity-alias
-            android:name=".icon_tag_1212"
-            android:enabled="true"
-            android:icon="@mipmap/qylogo"
-            android:label="@string/app_name"
-            android:targetActivity=".activity.SplashActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+             android:name=".icon_tag"
+             android:enabled="false"
+             android:icon="@drawable/logo"
+             android:label="@string/app_name"
+             android:targetActivity=".activity.SplashActivity">
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN"/>
+                 <category android:name="android.intent.category.LAUNCHER"/>
+             </intent-filter>
 
-            <meta-data
-                android:name="android.app.shortcuts"
-                android:resource="@xml/shortcuts" />
-        </activity-alias>
+             <meta-data
+                 android:name="android.app.shortcuts"
+                 android:resource="@xml/shortcuts" />
+         </activity-alias>
 
+         <activity-alias
+             android:name=".icon_tag_1212"
+             android:enabled="true"
+             android:icon="@mipmap/qylogo"
+             android:label="@string/app_name"
+             android:targetActivity=".activity.SplashActivity">
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN"/>
+                 <category android:name="android.intent.category.LAUNCHER"/>
+             </intent-filter>
+
+             <meta-data
+                 android:name="android.app.shortcuts"
+                 android:resource="@xml/shortcuts" />
+         </activity-alias>
+ -->
 
         <activity
             android:name=".activity.LoginActivity"
@@ -488,7 +488,7 @@
         <!-- Required -->
         <meta-data
             android:name="JPUSH_APPKEY"
-            android:value="7f489d5772f540279def6658" />
+            android:value="8e26b2df5578286abecb8d74" />
         <meta-data
             android:name="JPUSH_CHANNEL"
             android:value="developer-default" />

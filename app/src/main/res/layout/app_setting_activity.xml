@@ -56,10 +56,11 @@
 
     <View
         android:layout_width="match_parent"
+        android:visibility="gone"
         android:layout_height="@dimen/dp12"></View>
 
     <LinearLayout
-        android:visibility="visible"
+        android:visibility="gone"
         android:id="@+id/ll_shengwu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

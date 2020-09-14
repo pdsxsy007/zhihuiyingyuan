@@ -226,7 +226,7 @@ public class JPushReceiver extends BroadcastReceiver {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "message_id");;
         builder.setContentIntent(pendingIntent);
-        builder.setSmallIcon(R.drawable.icon);
+        builder.setSmallIcon(R.drawable.logo);
         builder.setContentTitle(title);
         builder.setContentText(msg);
         builder.setAutoCancel(true);

@@ -5,7 +5,7 @@ package io.cordova.zhihuiyingyuan;
  */
 
 public class UrlRes {
-    public static String HOME_URL ="http://platform.gilight.cn";
+    public static String HOME_URL ="http://mobile.havct.edu.cn";
 
 
 
@@ -14,7 +14,7 @@ public class UrlRes {
      */
     public static String casAuthenticationWeChat2ControllerUrl= "/cas/casAuthenticationWeChat2Controller";
     /*tgt  相关*/
-    public static String HOME2_URL ="http://platform.gilight.cn";
+    public static String HOME2_URL ="http://mobile.havct.edu.cn";
 
     /**
      是否显示绑定微信页面
@@ -28,10 +28,6 @@ public class UrlRes {
     /*图片前缀*/
     public static String HOME3_URL ="http://platform.gilight.cn/portal/public/getImg?path=";
 
-//    /**
-//     * 新生跳转到修改密码页面
-//     */
-//    public static String changePwdUrl="/authentication/login/casLogin?toUrl=/authenticationiews/appNativeangePwd.html";
     /**
      *  获取极光绑定ID
      * portal/mobile/login

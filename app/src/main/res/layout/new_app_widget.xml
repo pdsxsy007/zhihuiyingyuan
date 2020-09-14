@@ -15,7 +15,7 @@
             <io.cordova.zhihuiyingyuan.widget.CustomRoundAngleImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/icon"
+                android:src="@drawable/logo"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/dp10"
                 />

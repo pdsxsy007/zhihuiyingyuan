@@ -2566,6 +2566,20 @@ String ratios = null;
         mLocationClient.stop();
         unregisterReceiver(broadcastReceiver);
         unregisterReceiver(broadcastReceiver2);
+        //mAgentWeb.getWebCreator().getWebView().destroy();
+        WebView mwebView = mAgentWeb.getWebCreator().getWebView();
+        if (mwebView != null) {
+
+            mwebView.stopLoading();
+            mwebView.onPause();
+
+            mwebView.clearFormData();
+
+            mwebView.destroyDrawingCache();
+            mwebView.removeAllViews();
+            //WebStorage.getInstance().deleteAllData();
+            mwebView.destroy();
+        }
     }
 
     private class OpenFileChromeClient extends WebChromeClient {
