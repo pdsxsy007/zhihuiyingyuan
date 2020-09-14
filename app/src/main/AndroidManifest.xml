@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="io.cordova.zhihuiyingyuan">
+
+
+    <!-- 如果是安卓8.0，应用编译配置的targetSdkVersion>=26，请务必添加以下权限 -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- Required -->
+    <permission
+        android:name="io.cordova.zhihuiyingyuan.permission.JPUSH_MESSAGE"
+        android:protectionLevel="signature" />
+    <permission
+        android:name="io.cordova.zhihuiyingyuan.permission.MIPUSH_RECEIVE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+    <uses-permission android:name="io.cordova.zhihuiyingyuan.permission.MIPUSH_RECEIVE" />
+    <uses-permission android:name="io.cordova.zhihuiyingyuan.permission.JPUSH_MESSAGE" />
+    <!-- 声明权限 -->
+    <!-- <uses-permission android:name="android.permission.BLUETOOTH" /> -->
+    <!-- <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /> -->
+    <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.SET_DEBUG_APP" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+    <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.PERMISSION_GRANTED" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.ACTI" />
+
+    <!-- <uses-permission android:name="android.permission.RECEIVE_WAP_PUSH"/> -->
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <!-- 允许应用程序改变网络状态 -->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
+    <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
+
+    <!-- 设置华为角标的显示 -->
+    <uses-permission android:name="com.huawei.android.launcher.permission.CHANGE_BADGE" />
+
+    <!-- Optional -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- 用于开启 debug 版本的应用在6.0 系统上 层叠窗口权限 -->
+    <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <application
+        android:name=".utils.MyApp"
+        android:allowBackup="true"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/icon"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:replace="android:allowBackup,android:icon,android:roundIcon">
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="2.1" />
+
+
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="ugycxXUelGnSx2qx7bQ3TRpbQd0UPKdn" >
+        </meta-data>
+
+        <service android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote">
+        </service>
+
+        <!--<activity
+            android:name=".activity.SplashActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+
+                <action android:name="io.cordova.jhschool.SplashActivity" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="zzuli" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity>-->
+
+        <activity
+            android:name=".activity.SplashActivity"
+            android:screenOrientation="portrait"
+            android:enabled="true"
+            android:theme="@style/SplashTheme">
+        </activity>
+
+        <activity-alias
+            android:name=".icon_tag"
+            android:enabled="false"
+            android:icon="@drawable/icon"
+            android:label="@string/app_name"
+            android:targetActivity=".activity.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".icon_tag_1212"
+            android:enabled="true"
+            android:icon="@mipmap/qylogo"
+            android:label="@string/app_name"
+            android:targetActivity=".activity.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+
+        <activity
+            android:name=".activity.LoginActivity"
+
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".activity.LoginActivity3"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".activity.LoginActivity4"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".web.BaseWebActivity"
+            android:configChanges="screenSize|keyboardHidden|orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".web.BaseWebActivity2"
+            android:configChanges="screenSize|keyboardHidden|orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.MyDataActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.MyCollectionActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.MyToDoMsgActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.MyDataChangesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.AppSearchActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.FaceYiQingActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ChangeUserPassword"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.AppSetting"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden"></activity>
+        <activity
+            android:name=".activity.InfoDetailsActivity"
+            android:configChanges="screenSize|keyboardHidden|orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.OaMsgActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.SystemMsgActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.VersionMsgActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.MyShenqingActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.LoginActivity2"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="stateVisible|adjustResize" >
+
+        </activity>
+        <activity
+            android:name=".web.BaseWebActivity3"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".web.BaseWebActivity4"
+            android:configChanges="screenSize|keyboardHidden|orientation"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.OPEN_DOCUMENT" />
+
+                <category android:name="android.intent.category.OPENABLE" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.FindPwdActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.FindPwdNextActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.FindPwdCompleteActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.UpdatePwdInfoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".web.CodeWebActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ShengWuActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.CodeBindActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.FaceActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.UpdateFaceActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.FaceNewActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".web.ChangeUpdatePwdWebActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".face2.TestActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.newToDo.NewMyToDoMsgActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.newToDo.NewSystemMsgActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.newToDo.NewOaMsgActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.newToDo.NewMyShenqingActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".web.ClassWebActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.QRScanActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/SplashTheme"
+            />
+
+        <service android:name=".utils.MyIntentService" />
+
+        <receiver
+            android:name=".jpushutil.JPushReceiver"
+            android:enabled="true"
+            android:exported="false">
+
+            <!-- android:enabled="true" -->
+            <!-- android:permission="android.permission.SYSTEM_ALERT_WINDOW" -->
+            <!-- tools:ignore="ExportedReceiver" -->
+            <intent-filter>
+
+                <!-- Required 用户注册SDK的intent -->
+                <action android:name="cn.jpush.android.intent.REGISTRATION" />
+                <!-- Required 用户接收SDK消息的intent -->
+                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" />
+                <!-- Required 用户接收SDK通知栏信息的intent -->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" />
+                <!-- Required 用户打开自定义通知栏的intent -->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" />
+                <!-- 接收网络变化 连接/断开 since 1.6.3 -->
+                <action android:name="cn.jpush.android.intent.CONNECTION" />
+
+                <category android:name="io.cordova.zhihuiyingyuan" />
+            </intent-filter>
+        </receiver>
+        <!-- 推送UpdateProvider组件 -->
+       <!-- <provider
+            android:name="com.huawei.hms.update.provider.UpdateProvider"
+            android:authorities="io.cordova.jhschool.hms.update.provider"
+            android:exported="false"
+            android:grantUriPermissions="true"></provider>-->
+
+        <!-- since 3.1.0 Required SDK 核心功能 -->
+        <provider
+            android:name="cn.jpush.android.service.DownloadProvider"
+            android:authorities="io.cordova.zhihuiyingyuan.DownloadProvider"
+            android:exported="true" />
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.cordova.zhihuiyingyuan.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name=".activity.OpenClickActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/OpenClick">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="io.cordova.zhihuiyingyuan.activity.OpenClickActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.umeng.socialize.media.WBShareCallBackActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
+        <activity
+            android:name="com.sina.weibo.sdk.web.WeiboSdkWebActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"></activity>
+        <activity
+            android:name="com.sina.weibo.sdk.share.WbShareTransActivity"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
+            <intent-filter>
+                <action android:name="com.sina.weibo.sdk.action.ACTION_SDK_REQ_ACTIVITY" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".wxapi.WXEntryActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name="com.tencent.tauth.AuthActivity"
+            android:launchMode="singleTask"
+            android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="tencent100424468" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.tencent.connect.common.AssistActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            tools:replace="android:configChanges" />
+        <activity android:name=".activity.DeviceManagerActivity" />
+
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="5d5b48c14ca357e530000b56"></meta-data>
+
+       <!-- <provider
+            android:name="cn.jpush.android.service.DataProvider"
+            android:authorities="io.cordova.jhschool.DataProvider"
+            android:exported="true"
+            tools:replace="android:exported" />-->
+
+        <service
+            android:name=".PushService"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":pushcore">
+            <intent-filter>
+                <action android:name="cn.jiguang.user.service.action" />
+            </intent-filter>
+        </service>
+
+        <!-- &lt;!&ndash;本机号码一键登录&ndash;&gt; -->
+        <!-- &lt;!&ndash; since 2.0.0 optional 可选项，使用一键登录功能必须添加  &ndash;&gt; -->
+        <!-- &lt;!&ndash; since 2.1.1 optional 可选项，通过screenOrientation设置授权页面横竖屏展示  &ndash;&gt; -->
+        <activity
+            android:name="com.cmic.sso.sdk.activity.OAuthActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"></activity>
+        <!-- &lt;!&ndash; since 2.0.0 optional 可选项，使用一键登录功能必须添加  &ndash;&gt; -->
+        <!-- &lt;!&ndash; since 2.1.1 optional 可选项，通过screenOrientation设置授权页面横竖屏展示  &ndash;&gt; -->
+        <activity
+            android:name="com.cmic.sso.sdk.activity.LoginAuthActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Holo.NoActionBar"></activity>
+        <!-- &lt;!&ndash; since 2.0.0 optional 可选项，使用一键登录功能必须添加  &ndash;&gt; -->
+        <!-- &lt;!&ndash; since 2.1.1 optional 可选项，通过screenOrientation设置授权页面横竖屏展示  &ndash;&gt; -->
+        <activity
+            android:name="cn.jiguang.verifysdk.CtLoginActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Holo.NoActionBar"></activity>
+        <activity android:name=".activity.BindThreeActivity" />
+        <activity android:name=".activity.InfoDetailsActivity2" />
+        <activity android:name=".activity.WidgetActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden"
+            >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:value="@xml/new_app_widget_info" />
+        </activity>
+        <activity android:name=".web.BaseWebCloseActivity" />
+        <activity android:name=".activity.NoticeManagerActivity" />
+        <activity android:name=".web.HelpActivity" />
+        <activity android:name=".MyTestActivity" />
+
+        <!-- Required -->
+        <meta-data
+            android:name="JPUSH_APPKEY"
+            android:value="7f489d5772f540279def6658" />
+        <meta-data
+            android:name="JPUSH_CHANNEL"
+            android:value="developer-default" />
+
+        <receiver android:name=".NewAppWidget"
+            android:exported="true"
+            >
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/new_app_widget_info" />
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="io.cordova.zhihuiyingyuan.appwidgetprovider.click1" />
+                <action android:name="io.cordova.zhihuiyingyuan.appwidgetprovider.click2" />
+                <action android:name="io.cordova.zhihuiyingyuan.appwidgetprovider.click3" />
+                <action android:name="io.cordova.zhihuiyingyuan.appwidgetprovider.click4" />
+                <action android:name="io.cordova.zhihuiyingyuan.appwidgetprovider.click5" />
+                <action android:name="io.cordova.zhihuiyingyuan.appwidgetprovider.click6" />
+                <action android:name="io.cordova.zhihuiyingyuan.appwidgetprovider.click7" />
+                <action android:name="io.cordova.zhihuiyingyuan.appwidgetprovider.click8" />
+
+            </intent-filter>
+
+
+        </receiver>
+
+        <receiver android:name=".NewAppTwoWidget"
+            android:exported="true"
+            >
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/new_app_widget_infotwo" />
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="io.cordova.zhihuiyingyuan.appwidgetprovider.ll01" />
+                <action android:name="io.cordova.zhihuiyingyuan.appwidgetprovider.ll02" />
+                <action android:name="io.cordova.zhihuiyingyuan.appwidgetprovider.ll03" />
+                <action android:name="io.cordova.zhihuiyingyuan.appwidgetprovider.click8" />
+
+            </intent-filter>
+
+
+        </receiver>
+
+
+
+        <service
+            android:name=".service.UpdateService1"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false" ></service>
+
+        <service
+            android:name=".service.UpdateService2"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false" ></service>
+
+        <service
+            android:name=".service.UpdateService3"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false" ></service>
+
+        <service
+            android:name=".service.UpdateService4"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false" ></service>
+
+        <service
+            android:name=".service.UpdateService5"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false" ></service>
+
+        <service
+            android:name=".service.UpdateService6"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false" ></service>
+
+        <service
+            android:name=".service.UpdateService7"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false" ></service>
+
+        <service
+            android:name=".service.UpdateServiceSys1"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false" ></service>
+
+        <service
+            android:name=".service.UpdateServiceSys2"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false" ></service>
+        <service
+            android:name=".service.UpdateServiceSys3"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false" ></service>
+
+
+        <service android:name=".jpushutil.PushService"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":pushcore">
+            <intent-filter>
+                <action android:name="cn.jiguang.user.service.action" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name=".jpushutil.MyJPushMessageReceiver"
+            android:enabled="true"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.RECEIVE_MESSAGE" />
+                <category android:name="io.cordova.zhihuiyingyuan" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:authorities="io.cordova.zhihuiyingyuan.DataProvider"
+            android:name="cn.jpush.android.service.DataProvider"
+            android:process=":pushcore"
+            android:exported="false"
+            />
+        <!-- Required SDK 核心功能-->
+        <receiver
+            android:name="cn.jpush.android.service.PushReceiver"
+            android:enabled="true" >
+            <intent-filter android:priority="1000">
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY" />
+                <category android:name="io.cordova.zhihuiyingyuan"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+            <!-- Optional -->
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name="cn.jpush.android.service.AlarmReceiver" />
+
+        <!--Required SDK核心功能 since 3.3.0-->
+        <activity
+            android:name="cn.jpush.android.service.JNotifyActivity"
+            android:exported="true"
+            android:taskAffinity="jpush.custom"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.JNotifyActivity" />
+                <category android:name="io.cordova.zhihuiyingyuan" />
+            </intent-filter>
+        </activity>
+
+
+        <receiver
+            android:name=".jpushutil.GeTuiNotificationClickReceiver"
+            android:enabled="true"
+            android:exported="false"/>
+    </application>
+
+</manifest>
