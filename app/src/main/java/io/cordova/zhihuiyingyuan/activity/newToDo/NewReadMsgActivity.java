@@ -130,6 +130,7 @@ public class NewReadMsgActivity extends BaseActivity2  {
 
     private void netWorkSysMsgListOnLoadMore(final RefreshLayout refreshlayout) {
         OkGo.<String>post(UrlRes.HOME_URL + UrlRes.findUserMessagesByTypeUrl)
+                .tag(this)
                 .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
                 .params("pageSize", 15)
                 .params("type",type)

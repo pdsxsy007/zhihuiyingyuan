@@ -136,9 +136,9 @@ public class BindThreeActivity extends BaseActivity implements View.OnClickListe
             SPUtils.put(MyApp.getInstance(),"pwd",trim2+"");
 
             String imei =  AesEncryptUtile.encrypt((String) SPUtils.get(this, "imei", ""), key);
-            OkGo.<String>get(UrlRes.HOME2_URL +"/cas/casApiLoginController")
+            OkGo.<String>get(UrlRes.HOME2_URL +UrlRes.loginUrl)
                     .tag(this)
-                    .params("openid","123456")
+                    .params("openid",AesEncryptUtile.openid)
                     .params("username",s1)
                     .params("password",s2)
                     .params("equipmentId",imei)
@@ -179,7 +179,7 @@ public class BindThreeActivity extends BaseActivity implements View.OnClickListe
     private void bindWxInfo(final String s1, final String s2, final String username, final String tgt) {
         OkGo.<String>get(UrlRes.HOME2_URL +casAuthenticationWeChat2ControllerUrl)
                 .tag(this)
-                .params("openid","123456")
+                .params("openid",AesEncryptUtile.openid)
                 .params("username",s1)
                 .params("password",s2)
                 .params("weChatOpenid",openid)

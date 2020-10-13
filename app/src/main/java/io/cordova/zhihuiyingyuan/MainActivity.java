@@ -52,31 +52,41 @@ import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.jwsd.libzxing.OnQRCodeListener;
 import com.jwsd.libzxing.QRCodeManager;
+import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.ResponseInfo;
+import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.FileCallback;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
 
+import java.io.File;
 import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import butterknife.BindView;
 import cn.jpush.android.api.JPushInterface;
+import io.cordova.zhihuiyingyuan.activity.DeviceManagerActivity;
 import io.cordova.zhihuiyingyuan.activity.FaceNewActivity;
 import io.cordova.zhihuiyingyuan.activity.InfoDetailsActivity2;
 import io.cordova.zhihuiyingyuan.activity.LoginActivity2;
 import io.cordova.zhihuiyingyuan.bean.AddFaceBean;
+import io.cordova.zhihuiyingyuan.bean.AddTrustBean;
 import io.cordova.zhihuiyingyuan.bean.BaseBean;
 import io.cordova.zhihuiyingyuan.bean.CountBean;
 import io.cordova.zhihuiyingyuan.bean.CurrencyBean;
 import io.cordova.zhihuiyingyuan.bean.LoginBean;
 import io.cordova.zhihuiyingyuan.bean.NewStudentBean;
+import io.cordova.zhihuiyingyuan.bean.PageBean;
 import io.cordova.zhihuiyingyuan.bean.UpdateBean;
 import io.cordova.zhihuiyingyuan.bean.UserMsgBean;
+import io.cordova.zhihuiyingyuan.fragment.Home1Fragment;
 import io.cordova.zhihuiyingyuan.fragment.SecondFragment;
-import io.cordova.zhihuiyingyuan.fragment.home.Home1Fragment;
+
 import io.cordova.zhihuiyingyuan.fragment.home.MyPre2Fragment;
 import io.cordova.zhihuiyingyuan.fragment.home.ServicePreFragment;
 import io.cordova.zhihuiyingyuan.jpushutil.NotificationsUtils;
@@ -105,7 +115,9 @@ import io.cordova.zhihuiyingyuan.widget.MyDialog;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
+import static io.cordova.zhihuiyingyuan.UrlRes.HOME3_URL;
 import static io.cordova.zhihuiyingyuan.UrlRes.HOME_URL;
+import static io.cordova.zhihuiyingyuan.UrlRes.getWelcomPageUrl;
 import static io.cordova.zhihuiyingyuan.UrlRes.insertPortalPositionUrl;
 import static io.cordova.zhihuiyingyuan.activity.SplashActivity.getLocalVersionName;
 import static io.cordova.zhihuiyingyuan.jpushutil.TagAliasOperatorHelper.ACTION_SET;
@@ -228,11 +240,97 @@ public class MainActivity extends BaseActivity3 implements PermissionsUtil.IPerm
             }
         }
 
+        permissionsUtil=  PermissionsUtil
+                .with(this)
+                .requestCode(2)
+                .isDebug(true)//开启log
+                .permissions(
+                        PermissionsUtil.Permission.Storage.READ_EXTERNAL_STORAGE,
+                        PermissionsUtil.Permission.Storage.WRITE_EXTERNAL_STORAGE
+                )
+                .request();
+
         String openlogin = getIntent().getStringExtra("openlogin");
         if(openlogin != null){
             Log.e("跳转","跳转登录");
             Intent intent = new Intent(MainActivity.this,LoginActivity2.class);
             startActivity(intent);
+        }
+
+
+
+    }
+
+    private void getWelcomPageInfo() {
+        OkGo.<String>post(HOME_URL+UrlRes.getWelcomPageUrl)
+                .params("type",1)
+                .params("size","2")
+                .execute(new StringCallback() {
+                             @Override
+                             public void onSuccess(Response<String> response) {
+                                 Log.e("下载图片",response.body());
+                                 PageBean pageBean = JSON.parseObject(response.body(),PageBean.class);
+                                 if(pageBean.getSuccess()){
+                                     List<PageBean.Obj> obj = pageBean.getObj();
+                                     if(null != obj){
+                                         if(obj.size() > 0){
+                                             String welcomePageStartTime = obj.get(0).getWelcomePageStartTime();
+                                             String welcomePageEndTime = obj.get(0).getWelcomePageEndTime();
+                                             String welcomePageImg = obj.get(0).getWelcomePageImg();
+                                             int welcomePageType = obj.get(0).getWelcomePageType();//1.图片  2.视频
+                                             SPUtils.put(MainActivity.this,"welcomePageStartTime",welcomePageStartTime);
+                                             SPUtils.put(MainActivity.this,"welcomePageEndTime",welcomePageEndTime);
+                                             if(welcomePageType == 1){
+
+                                                 initImgData(welcomePageImg);
+                                             }
+                                         }
+                                     }
+                                 }
+                             }
+
+                             @Override
+                             public void onError(Response<String> response) {
+                                 super.onError(response);
+
+                             }
+                         }
+                );
+    }
+
+    private void initImgData(String welcomePageImg) {
+
+
+        try {
+            String encode = URLEncoder.encode(welcomePageImg, "UTF-8");
+            /*String encode = URLEncoder.encode(welcomePageImg, "UTF-8");
+            String imageUrl = IpConfig.BASE_IMAGE_URL + mUnlockImageUrl;//http://47.98.121.127/upload/advert/20180706/1530849977.jpg
+            String localPath = DownLoadFileUtils.customLocalStoragePath("image");// /storage/emulated/0/image/
+            DownLoadFileUtils.downloadFile(this, imageUrl, localPath, "suoping", mUnlockImageUrl);
+            //localPath+DownLoadFileUtils.subFileFullName("suoping",mUnlockImageUrl)就是：/storage/emulated/0/image/suoping.jpg  本地SD卡中图片存储的完整路径
+            //拿本地路径通过Glide加载到imageView控件中
+            Glide.with(this).load(localPath+DownLoadFileUtils.subFileFullName("suoping",mUnlockImageUrl)).into(mUnlockAdvertImage);*/
+
+            com.lidroid.xutils.HttpUtils http = new com.lidroid.xutils.HttpUtils();
+            http.download(HOME3_URL+encode,  Environment.getExternalStorageDirectory()+"/downImage.png", true, false, new RequestCallBack<File>() {
+                @Override
+                public void onStart() {
+                }
+                @Override
+                public void onLoading(long total, long current, boolean isUploading) {
+                }
+                @Override
+                public void onFailure(HttpException error, String msg) {
+                }
+
+                @Override
+                public void onSuccess(ResponseInfo<File> responseInfo) {
+                    //File file = new File(Environment.getExternalStorageDirectory()+"/downImage.png");
+                    //ToastUtils.showToast(MainActivity.this,file.getName());
+                }
+            });
+        } catch (Exception e) {
+            Log.d("error", e.toString());
         }
 
 
@@ -413,7 +511,7 @@ public class MainActivity extends BaseActivity3 implements PermissionsUtil.IPerm
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this,BaseWebActivity4.class);
-                intent.putExtra("appUrl","http://platform.gilight.cn/authentication/authentication/views/appNative/privacyProtocol.html" );
+                intent.putExtra("appUrl",UrlRes.yinSiShengMingUrl );
                 startActivity(intent);
             }
         });
@@ -536,7 +634,7 @@ public class MainActivity extends BaseActivity3 implements PermissionsUtil.IPerm
                                     String type = obj.getType();
                                     if (type.equals("0")) {//弹出修改密码
                                         Intent intent = new Intent(MainActivity.this, ChangeUpdatePwdWebActivity.class);
-                                        intent.putExtra("appUrl", "http://platform.gilight.cn/authentication/authentication/views/appNative/changePwd_jhdx.html");
+                                        intent.putExtra("appUrl", "http://mobile.havct.edu.cn/authentication/authentication/views/appNative/changePwd_jhdx.html");
                                         startActivity(intent);
                                     }
                                 }
@@ -775,7 +873,7 @@ public class MainActivity extends BaseActivity3 implements PermissionsUtil.IPerm
         ViewUtils.createLoadingDialog(this);
         OkGo.<String>post(UrlRes.HOME2_URL + UrlRes.addFaceUrl)
                 .tag(this)
-                .params("openId", "123456")
+                .params("openId", AesEncryptUtile.openid)
                 .params("memberId", (String) SPUtils.get(MyApp.getInstance(), "userId", ""))
                 .params("img", sresult)
                 .execute(new StringCallback() {
@@ -1023,7 +1121,7 @@ public class MainActivity extends BaseActivity3 implements PermissionsUtil.IPerm
      * 根据UserId 绑定Jpush
      */
     private void bindJpush() {
-        OkGo.<String>get(UrlRes.HOME4_URL + UrlRes.Registration_Id)
+        OkGo.<String>get(UrlRes.HOME_URL + UrlRes.Registration_Id)
                 .tag("Jpush")
                 .params("equipType", "android")
                 .params("userId", (String) SPUtils.get(getInstance(), "userId", ""))
@@ -1376,7 +1474,7 @@ public class MainActivity extends BaseActivity3 implements PermissionsUtil.IPerm
 
                 webView.setWebViewClient(mWebViewClient);
 
-                webView.loadUrl(HOME_URL+"/portal/login/appLogin");//http://platform.gilight.cn/cas/login
+                webView.loadUrl(HOME_URL+"/portal/login/appLogin");
 
                 if (count.equals("")) {
                     netWorkSystemMsg();
@@ -1421,9 +1519,9 @@ public class MainActivity extends BaseActivity3 implements PermissionsUtil.IPerm
         }
 
 
-        OkGo.<String>get(UrlRes.HOME2_URL + "/cas/casApiLoginController")
+        OkGo.<String>get(UrlRes.HOME2_URL + UrlRes.loginUrl)
                 .tag(this)
-                .params("openid", "123456")
+                .params("openid", AesEncryptUtile.openid)
                 .params("username", s1)
                 .params("password", s2)
                 .execute(new StringCallback() {
@@ -1639,7 +1737,7 @@ public class MainActivity extends BaseActivity3 implements PermissionsUtil.IPerm
 
 
             String tgc = (String) SPUtils.get(MainActivity.this, "TGC", "");
-            CookieUtils.syncCookie("http://platform.gilight.cn", "CASTGC=" + tgc, getApplication());
+            CookieUtils.syncCookie("http://mobile.havct.edu.cn", "CASTGC=" + tgc, getApplication());
 
 
         }
@@ -1718,7 +1816,10 @@ public class MainActivity extends BaseActivity3 implements PermissionsUtil.IPerm
             addMobieInfo();
         }else if(requestCode == 1){
             onScanQR();
+        }else if(requestCode == 2){
+            getWelcomPageInfo();
         }
+
 
 
     }

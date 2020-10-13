@@ -235,6 +235,7 @@ public class MyPre2Fragment extends BaseFragment implements PermissionsUtil.IPer
 
     private void dbDataList() {
         OkGo.<String>post(UrlRes.HOME_URL + UrlRes.Query_workFolwDbList)
+                .tag(this)
                 .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
                 .params("type","db")
                 .params("size", 15)
@@ -310,6 +311,7 @@ public class MyPre2Fragment extends BaseFragment implements PermissionsUtil.IPer
     private void netWorkUserMsg() {
         try {
             OkGo.<String>post(UrlRes.HOME_URL + UrlRes.User_Msg)
+                    .tag(this)
                     .params("userId", (String) SPUtils.get(MyApp.getInstance(),"userId",""))
                     .execute(new StringCallback() {
                         @Override
@@ -518,6 +520,7 @@ public class MyPre2Fragment extends BaseFragment implements PermissionsUtil.IPer
     private void netWorkMyCollection() {
         try {
             OkGo.<String>post(UrlRes.HOME_URL + UrlRes.My_Collection)
+                    .tag(this)
                     .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
                     .execute(new StringCallback() {
                         @Override
@@ -999,6 +1002,7 @@ public class MyPre2Fragment extends BaseFragment implements PermissionsUtil.IPer
 
         String userId = (String) SPUtils.get(MyApp.getInstance(), "userId", "");
         OkGo.<String>post(UrlRes.HOME_URL + UrlRes.Query_countUnreadMessagesForCurrentUser)
+                .tag(this)
                 .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
                 .execute(new StringCallback() {
                     @Override

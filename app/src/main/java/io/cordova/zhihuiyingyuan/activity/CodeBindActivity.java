@@ -124,7 +124,7 @@ public class CodeBindActivity extends BaseActivity2 implements View.OnClickListe
             String userName = AesEncryptUtile.decrypt(username,key) ;
             String userid = AesEncryptUtile.encrypt(userName + "_" + Calendar.getInstance().getTimeInMillis(), key);
             OkGo.<String>get(UrlRes.HOME2_URL +verificationUrl)
-                    .params("openid","123456")
+                    .params("openid",AesEncryptUtile.openid)
                     .params("memberId",userid)
                     .params("type",type0)
                     .params("verificationCode",vcode)
@@ -169,8 +169,8 @@ public class CodeBindActivity extends BaseActivity2 implements View.OnClickListe
             SPUtils.put(MyApp.getInstance(),"phone",AesEncryptUtile.decrypt(uname)+"");
             SPUtils.put(MyApp.getInstance(),"pwd",AesEncryptUtile.decrypt(pwd)+"");
             String imei =  AesEncryptUtile.encrypt((String) SPUtils.get(this, "imei", ""), key);
-            OkGo.<String>get(UrlRes.HOME2_URL +"/cas/casApiLoginController")
-                    .params("openid","123456")
+            OkGo.<String>get(UrlRes.HOME2_URL +UrlRes.loginUrl)
+                    .params("openid",AesEncryptUtile.openid)
                     .params("username",uname)
                     .params("password",pwd)
                     .params("type","9")
@@ -254,7 +254,7 @@ public class CodeBindActivity extends BaseActivity2 implements View.OnClickListe
             }
 
 
-            if (url.contains("http://platform.gilight.cn/cas/login")) {
+            if (url.contains("http://mobile.havct.edu.cn/cas/login")) {
                 if (StringUtils.isEmpty((String)SPUtils.get(MyApp.getInstance(),"username",""))){
                     Intent intent = new Intent(getApplicationContext(),LoginActivity2.class);
                     startActivity(intent);
@@ -270,7 +270,7 @@ public class CodeBindActivity extends BaseActivity2 implements View.OnClickListe
         /**网址拦截*/
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if (url.contains("http://platform.gilight.cn/cas/login")) {
+            if (url.contains("http://mobile.havct.edu.cn/cas/login")) {
                 if (StringUtils.isEmpty((String)SPUtils.get(MyApp.getInstance(),"username",""))){
                     Intent intent = new Intent(getApplicationContext(),LoginActivity2.class);
                     startActivity(intent);
@@ -286,7 +286,7 @@ public class CodeBindActivity extends BaseActivity2 implements View.OnClickListe
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
 
-            CookieUtils.syncCookie("http://platform.gilight.cn","CASTGC="+tgt,CodeBindActivity.this);
+            CookieUtils.syncCookie("http://mobile.havct.edu.cn","CASTGC="+tgt,CodeBindActivity.this);
 
         }
 

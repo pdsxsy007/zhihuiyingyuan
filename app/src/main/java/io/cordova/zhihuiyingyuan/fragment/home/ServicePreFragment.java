@@ -1006,7 +1006,7 @@ public class ServicePreFragment extends BaseFragment implements PermissionsUtil.
             }
 
 
-            if (url.contains("http://platform.gilight.cn/cas/login")) {
+            if (url.contains("http://mobile.havct.edu.cn/cas/login")) {
                 if (StringUtils.isEmpty((String)SPUtils.get(MyApp.getInstance(),"username",""))){
                     Intent intent = new Intent(getActivity(),LoginActivity2.class);
                     startActivity(intent);
@@ -1021,7 +1021,7 @@ public class ServicePreFragment extends BaseFragment implements PermissionsUtil.
         /**网址拦截*/
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if (url.contains("http://platform.gilight.cn/cas/login")) {
+            if (url.contains("http://mobile.havct.edu.cn/cas/login")) {
                 if (StringUtils.isEmpty((String)SPUtils.get(MyApp.getInstance(),"username",""))){
                     Intent intent = new Intent(getActivity(),LoginActivity2.class);
                     startActivity(intent);
@@ -1035,7 +1035,7 @@ public class ServicePreFragment extends BaseFragment implements PermissionsUtil.
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
 
-            CookieUtils.syncCookie("http://platform.gilight.cn","CASTGC="+SPUtils.get(getActivity(),"TGC",""),getActivity());
+            CookieUtils.syncCookie("http://mobile.havct.edu.cn","CASTGC="+SPUtils.get(getActivity(),"TGC",""),getActivity());
 
 
         }

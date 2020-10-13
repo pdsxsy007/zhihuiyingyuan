@@ -56,6 +56,7 @@ import butterknife.BindView;
 import gdut.bsx.share2.Share2;
 import gdut.bsx.share2.ShareContentType;
 import io.cordova.zhihuiyingyuan.R;
+import io.cordova.zhihuiyingyuan.UrlRes;
 import io.cordova.zhihuiyingyuan.utils.BaseActivity;
 import io.cordova.zhihuiyingyuan.utils.CookieUtils;
 import io.cordova.zhihuiyingyuan.utils.MyApp;
@@ -136,20 +137,70 @@ public class InfoDetailsActivity2 extends BaseActivity {
             tv_title.setText(title);
         }
 
+        if(appUrl.contains("gilight://")){
+            //gilight://url=weixin://123
+            if(!appUrl.contains("http")){
+                final String endUrl = appUrl.substring(10,appUrl.length());
+                String[] split = endUrl.split("//");
+                String s = split[0];
+                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
+                builder.setTitle("是否打开"+s);
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
-        if(appUrl!= null){
+                    }
+                });
+                builder.setPositiveButton("打开", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String appServiceUrl2 = UrlRes.huanxingUrl+"?"+endUrl;
+                        Log.e("appServiceUrl2",appServiceUrl2);
+                        Uri uri = Uri.parse(appServiceUrl2);
+                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                        if (intent.resolveActivity(getPackageManager()) != null) {
+                            // 网址正确 跳转成功
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            //网址不正确 跳转失败 提示错误
+                            //Toast.makeText(MainActivity.this, "网址输入错误，请重新输入！", Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+                });
+                builder.create().show();
+            }else {
+
+                String endUrl = appUrl.substring(10,appUrl.length());
+                String appServiceUrl2 = UrlRes.huanxingUrl+"?"+endUrl;
+                Log.e("appServiceUrl2",appServiceUrl2);
+                Uri uri = Uri.parse(appServiceUrl2);
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    // 网址正确 跳转成功
+                    startActivity(intent);
+                    finish();
+                } else {
+                    //网址不正确 跳转失败 提示错误
+                    //Toast.makeText(MainActivity.this, "网址输入错误，请重新输入！", Toast.LENGTH_SHORT).show();
+
+                }
+
+            }
 
 
-            webView.loadUrl(appUrl);
-            WebSettings webSettings = webView.getSettings();
-            webSettings.setJavaScriptEnabled(true);
-            webView.setDownloadListener(new MyWebViewDownLoadListener());
-            webView.setWebChromeClient(mWebChromeClient);
-            webView.setWebViewClient(mWebViewClient);
-        }else {
 
         }
 
+
+
+        webView.loadUrl(appUrl);
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webView.setDownloadListener(new MyWebViewDownLoadListener());
+        webView.setWebChromeClient(mWebChromeClient);
+        webView.setWebViewClient(mWebViewClient);
 
     }
 
@@ -288,7 +339,7 @@ public class InfoDetailsActivity2 extends BaseActivity {
         /**网址拦截*/
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if (url.contains("http://platform.gilight.cn/cas/login")) {
+            if (url.contains("http://mobile.havct.edu.cn")) {
                 if (StringUtils.isEmpty((String)SPUtils.get(MyApp.getInstance(),"username",""))){
                     Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
                     startActivity(intent);
@@ -305,7 +356,7 @@ public class InfoDetailsActivity2 extends BaseActivity {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             //do you  work
-            CookieUtils.syncCookie("http://platform.gilight.cn","CASTGC="+tgc,getApplication());
+            CookieUtils.syncCookie("http://mobile.havct.edu.cn","CASTGC="+tgc,getApplication());
             Log.i("Info", "BaseWebActivity onPageStarted");
         }
     };

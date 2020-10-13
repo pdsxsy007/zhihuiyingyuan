@@ -1127,6 +1127,7 @@ public class InfoDetailsActivity extends BaseActivity implements PermissionsUtil
         try {
             userId = AesEncryptUtile.encrypt(username+ "_"+ Calendar.getInstance().getTimeInMillis(),key);
             OkGo.<String>post(HOME_URL+functionInvocationLogUrl)
+                    .tag(this)
                     .params("invocationLogAppId",appid)
                     .params("invocationLogMember",userId)
                     .params("invocationLogFunction",function)

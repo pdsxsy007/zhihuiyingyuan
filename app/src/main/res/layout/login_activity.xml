@@ -111,7 +111,7 @@
                             android:layout_width="15dp"
                             android:src="@mipmap/gantan"
                             android:id="@+id/gantan"
-                            android:visibility="gone"
+                            android:visibility="visible"
                             android:layout_marginRight="@dimen/dp12"
                             android:layout_gravity="center"
                             android:layout_height="15dp" />

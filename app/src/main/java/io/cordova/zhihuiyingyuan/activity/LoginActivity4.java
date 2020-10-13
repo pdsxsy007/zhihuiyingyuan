@@ -139,8 +139,8 @@ public class LoginActivity4 extends BaseActivity {
         }
 
 
-        OkGo.<String>get(UrlRes.HOME2_URL +"/cas/casApiLoginController")
-                .params("openid","123456")
+        OkGo.<String>get(UrlRes.HOME2_URL +UrlRes.loginUrl)
+                .params("openid",AesEncryptUtile.openid)
                 .params("username",s1)
                 .params("password",s2)
                 .execute(new StringCallback() {
@@ -218,7 +218,7 @@ public class LoginActivity4 extends BaseActivity {
             }
 
 
-            if (url.contains("http://platform.gilight.cn/cas/login")) {
+            if (url.contains("http://mobile.havct.edu.cn/cas/login")) {
                 if (StringUtils.isEmpty((String)SPUtils.get(MyApp.getInstance(),"username",""))){
                     Intent intent = new Intent(getApplicationContext(),LoginActivity4.class);
                     startActivity(intent);
@@ -244,7 +244,7 @@ public class LoginActivity4 extends BaseActivity {
         /**网址拦截*/
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if (url.contains("http://platform.gilight.cn/cas/login")) {
+            if (url.contains("http://mobile.havct.edu.cn/cas/login")) {
                 if (StringUtils.isEmpty((String)SPUtils.get(MyApp.getInstance(),"username",""))){
                     Intent intent = new Intent(getApplicationContext(),LoginActivity4.class);
                     startActivity(intent);
@@ -260,7 +260,7 @@ public class LoginActivity4 extends BaseActivity {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
 
-            CookieUtils.syncCookie("http://platform.gilight.cn","CASTGC="+tgt,getApplication());
+            CookieUtils.syncCookie("http://mobile.havct.edu.cn","CASTGC="+tgt,getApplication());
 
 
         }

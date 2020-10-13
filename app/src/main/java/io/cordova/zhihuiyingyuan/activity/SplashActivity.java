@@ -8,6 +8,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
@@ -19,6 +20,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import com.alibaba.fastjson.JSON;
+import com.bumptech.glide.Glide;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
@@ -29,6 +31,7 @@ import com.umeng.analytics.MobclickAgent;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -85,9 +88,52 @@ public class SplashActivity extends AppCompatActivity {
             handleOpenClick();
         }
 
-            initView();
+        String welcomePageStartTime = (String) SPUtils.get(this, "welcomePageStartTime", "");
+        String welcomePageEndTime = (String) SPUtils.get(this, "welcomePageEndTime", "");
 
-        getNowTime();
+        initView();
+
+        getNowTime2(welcomePageStartTime,welcomePageEndTime);
+        //getNowTime();
+    }
+
+    private static SimpleDateFormat sf = null;
+     public static String getDateToString(long time) {
+                 Date d = new Date(time);
+                 sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                 return sf.format(d);
+             }
+
+
+    private void getNowTime2(String welcomePageStartTime, String welcomePageEndTime) {
+        if(!welcomePageStartTime.equals("") && !welcomePageEndTime.equals("")){
+
+            long l1 = Long.parseLong(welcomePageStartTime);
+            long l2 = Long.parseLong(welcomePageEndTime);
+
+            String startTimeImage = getDateToString(l1);
+            String endTimeImage = getDateToString(l2);
+            Log.e("startTimeImage",startTimeImage);
+            Log.e("endTimeImage",endTimeImage);
+            SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
+            Date startTime = null;
+            try {
+               /* startTime = ft.parse("2020-09-21 14:50:54");
+                Date endTime = ft.parse("2020-09-21 18:54:54");*/
+                startTime = ft.parse(startTimeImage);
+                Date endTime = ft.parse(endTimeImage);
+                Date nowTime = new Date();
+                boolean effectiveDate = isEffectiveDate(nowTime, startTime, endTime);
+                if (effectiveDate) {
+                    Glide.with(this).load(new File(Environment.getExternalStorageDirectory()+"/downImage.png")).into(imageView);
+                }else {
+
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     public void getNowTime()  {
@@ -249,8 +295,8 @@ public class SplashActivity extends AppCompatActivity {
 
         try {
             String imei = AesEncryptUtile.encrypt((String) SPUtils.get(this, "imei", ""), key);
-            OkGo.<String>get(UrlRes.HOME2_URL +"/cas/casApiLoginController")
-                    .params("openid","123456")
+            OkGo.<String>get(UrlRes.HOME2_URL +UrlRes.loginUrl)
+                    .params("openid",AesEncryptUtile.openid)
                     .params("username",s1)
                     .params("password",s2)
                     .params("type","10")
@@ -553,7 +599,7 @@ public class SplashActivity extends AppCompatActivity {
             }
 
 
-            if (url.contains("http://platform.gilight.cn/portal/login/appLogin")) {
+            if (url.contains("http://mobile.havct.edu.cn/portal/login/appLogin")) {
                 if (StringUtils.isEmpty((String)SPUtils.get(MyApp.getInstance(),"username",""))){
                     Intent intent = new Intent(getApplicationContext(),LoginActivity2.class);
                     startActivity(intent);
@@ -568,7 +614,7 @@ public class SplashActivity extends AppCompatActivity {
         /**网址拦截*/
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if (url.contains("http://platform.gilight.cn/portal/login/appLogin")) {
+            if (url.contains("http://mobile.havct.edu.cn/portal/login/appLogin")) {
                 if (StringUtils.isEmpty((String)SPUtils.get(MyApp.getInstance(),"username",""))){
                     Intent intent = new Intent(getApplicationContext(),LoginActivity2.class);
                     startActivity(intent);
@@ -584,7 +630,7 @@ public class SplashActivity extends AppCompatActivity {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
 
-            CookieUtils.syncCookie("http://platform.gilight.cn","CASTGC="+tgt,getApplication());
+            CookieUtils.syncCookie("http://mobile.havct.edu.cn","CASTGC="+tgt,getApplication());
 
 
         }

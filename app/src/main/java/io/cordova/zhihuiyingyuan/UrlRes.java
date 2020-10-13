@@ -6,15 +6,23 @@ package io.cordova.zhihuiyingyuan;
 
 public class UrlRes {
     public static String HOME_URL ="http://mobile.havct.edu.cn";
+    //public static String HOME_URL ="http://192.168.30.68:8080";  //韩鹏
+
+    /*tgt  相关*/
+    public static String HOME2_URL ="http://mobile.havct.edu.cn";
+    //public static String HOME2_URL ="http://192.168.30.68:8090";  //韩鹏
 
 
+    /**
+     登录
+     */
+    public static String loginUrl= "/cas/casApiLoginController";
 
     /**
      绑定微信
      */
     public static String casAuthenticationWeChat2ControllerUrl= "/cas/casAuthenticationWeChat2Controller";
-    /*tgt  相关*/
-    public static String HOME2_URL ="http://mobile.havct.edu.cn";
+
 
     /**
      是否显示绑定微信页面
@@ -22,11 +30,9 @@ public class UrlRes {
     public static String casWeChatApiLoginControllerUrl= "/cas/casWeChatApiLoginController";
 
 
-    /*绑定极光*/
-    public static String HOME4_URL ="http://platform.gilight.cn";
 
     /*图片前缀*/
-    public static String HOME3_URL ="http://platform.gilight.cn/portal/public/getImg?path=";
+    public static String HOME3_URL =HOME_URL+"/portal/public/getImg?path=";
 
     /**
      *  获取极光绑定ID
@@ -247,7 +253,8 @@ public class UrlRes {
     /**
      新闻
      */
-    public static String findNewsUrl= "/portal/mobile/news/findNews";
+    //public static String findNewsUrl= "/portal/mobile/news/findNews";
+    public static String findNewsUrl= "/portal/mobile/news/newslist";
     /**
      轮播图
      */
@@ -261,4 +268,17 @@ public class UrlRes {
     public static String huanxingUrl = "http://iapp.zzuli.edu.cn/portal/portal-app/app-5/huanxing.html";
 
     public static String jobTestUrl = "/portal/mobile/jobTest";
+
+    /**
+     * 启动页获取最新展示图片
+     */
+    public static String getWelcomPageUrl = "/portal/mobile/welcom/getWelcomPage";
+
+    /**
+     * 隐私声明
+     */
+    public static String yinSiShengMingUrl = "http://mobile.havct.edu.cn/authentication/authentication/views/appNative/privacyProtocol.html";
+
+    public static String findLoginTypeListUrl = "/portal/mobile/config/findLoginTypeList";
+
 }

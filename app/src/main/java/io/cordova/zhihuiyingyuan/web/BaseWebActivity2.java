@@ -404,7 +404,7 @@ public class BaseWebActivity2 extends AppCompatActivity {
             }
 
 
-            if (url.contains("http://platform.gilight.cn/cas/login")) {
+            if (url.contains("http://mobile.havct.edu.cn/cas/login")) {
                 if (StringUtils.isEmpty((String) SPUtils.get(MyApp.getInstance(),"username",""))){
                     Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
                     startActivity(intent);
@@ -419,7 +419,7 @@ public class BaseWebActivity2 extends AppCompatActivity {
         /**网址拦截*/
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if (url.contains("http://platform.gilight.cn/cas/login")) {
+            if (url.contains("http://mobile.havct.edu.cn/cas/login")) {
                 if (StringUtils.isEmpty((String) SPUtils.get(MyApp.getInstance(),"username",""))){
                     Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
                     startActivity(intent);
@@ -434,7 +434,7 @@ public class BaseWebActivity2 extends AppCompatActivity {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
 
-            CookieUtils.syncCookie("http://platform.gilight.cn","CASTGC="+tgc,getApplication());
+            CookieUtils.syncCookie("http://mobile.havct.edu.cn","CASTGC="+tgc,getApplication());
             //do you  work
             Log.i("Info", "BaseWebActivity onPageStarted");
             if (!StringUtils.isEmpty(appId)){
@@ -882,7 +882,7 @@ public class BaseWebActivity2 extends AppCompatActivity {
             }
 
 
-            if (url.contains("http://platform.gilight.cn/cas/login")) {
+            if (url.contains("http://mobile.havct.edu.cn/cas/login")) {
                 if (StringUtils.isEmpty((String) SPUtils.get(MyApp.getInstance(),"username",""))){
                     Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
                     startActivity(intent);
@@ -897,7 +897,7 @@ public class BaseWebActivity2 extends AppCompatActivity {
         /**网址拦截*/
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if (url.contains("http://platform.gilight.cn/cas/login")) {
+            if (url.contains("http://mobile.havct.edu.cn/cas/login")) {
                 if (StringUtils.isEmpty((String) SPUtils.get(MyApp.getInstance(),"username",""))){
                     Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
                     startActivity(intent);
@@ -912,7 +912,7 @@ public class BaseWebActivity2 extends AppCompatActivity {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
 
-            CookieUtils.syncCookie("http://platform.gilight.cn","CASTGC="+tgc,getApplication());
+            CookieUtils.syncCookie("http://mobile.havct.edu.cn","CASTGC="+tgc,getApplication());
             //do you  work
             Log.i("Info", "BaseWebActivity onPageStarted");
             if (!StringUtils.isEmpty(appId)){

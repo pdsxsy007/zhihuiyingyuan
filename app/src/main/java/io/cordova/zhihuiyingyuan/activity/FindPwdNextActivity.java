@@ -110,7 +110,8 @@ public class FindPwdNextActivity extends BaseActivity implements View.OnClickLis
                 updateType = URLEncoder.encode(AesEncryptUtile.encrypt("2", key), "UTF-8");
             }
             OkGo.<String>get(UrlRes.HOME2_URL +updatePasswordUrl)
-                    .params("openId","123456")
+                    .tag(this)
+                    .params("openId",AesEncryptUtile.openid)
                     .params("memberId",member)
                     .params("memberPwd",pwd)
                     .params("code",code)

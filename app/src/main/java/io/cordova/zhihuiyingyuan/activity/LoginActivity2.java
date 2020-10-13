@@ -2,6 +2,7 @@ package io.cordova.zhihuiyingyuan.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,6 +20,7 @@ import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.CookieManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -66,6 +68,7 @@ import io.cordova.zhihuiyingyuan.bean.FaceBean;
 import io.cordova.zhihuiyingyuan.bean.FaceBean2;
 import io.cordova.zhihuiyingyuan.bean.LogInTypeBean;
 import io.cordova.zhihuiyingyuan.bean.LoginBean;
+import io.cordova.zhihuiyingyuan.bean.NoticeInfoBean;
 import io.cordova.zhihuiyingyuan.bean.WXInfoBean;
 import io.cordova.zhihuiyingyuan.utils.AesEncryptUtile;
 import io.cordova.zhihuiyingyuan.utils.CookieUtils;
@@ -87,6 +90,7 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static io.cordova.zhihuiyingyuan.UrlRes.casWeChatApiLoginControllerUrl;
+import static io.cordova.zhihuiyingyuan.UrlRes.findLoginTypeListUrl;
 import static io.cordova.zhihuiyingyuan.utils.AesEncryptUtile.key;
 
 
@@ -194,18 +198,53 @@ public class LoginActivity2 extends LoginBaseActivity implements GestureDetector
         gantanImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDialogs();
+                //showDialogs();
+                getNoticeInfo();
             }
         });
 
 
     }
 
-    private AlertDialog mAlertDialog;    /**设置弹窗*/
-    private void showDialogs() {
+    private void getNoticeInfo() {
+        OkGo.<String>get(UrlRes.HOME_URL +findLoginTypeListUrl)
+                .tag(this)
+                .params("type","promptInformation")
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        Log.e("result1",response.body());
+
+
+                        NoticeInfoBean noticeInfoBean = JsonUtil.parseJson(response.body(),NoticeInfoBean.class);
+
+                        List<NoticeInfoBean.Obj> obj = noticeInfoBean.getObj();
+                        if(obj != null){
+                            String configValue = obj.get(0).getConfigValue();
+                            showNoticeDialogs(configValue);
+                        }else {
+                            showNoticeDialogs("用户名为学/工号，默认密码身份证号后6位");
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+                        showNoticeDialogs("用户名为学/工号，默认密码身份证号后6位");
+                    }
+                });
+
+    }
+
+
+
+    private AlertDialog mAlertDialog;    /**设置弹窗
+     * @param configValue*/
+    private void showNoticeDialogs(String configValue) {
         if (mAlertDialog == null) {
             mAlertDialog = new AlertDialog.Builder(this)
-                    .setMessage("新生用户名为考生号，在校生/教职工用户名为学/工号，默认密码身份证12-17位（详情请参考应用服务-用户手册)")
+                    .setMessage(configValue)
                     .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -270,6 +309,7 @@ public class LoginActivity2 extends LoginBaseActivity implements GestureDetector
                 String uname = StringUtils.getEditTextData(etPhoneNum);
                 String pwd = StringUtils.getEditTextData(etPassword);
                 SPUtils.put(this,"usernameeidt",uname);
+                hideSoftKeyboard(this);
                 netWorkLogin(uname,pwd);
 
                 break;
@@ -288,6 +328,15 @@ public class LoginActivity2 extends LoginBaseActivity implements GestureDetector
                 break;
         }
     }
+
+    public static void hideSoftKeyboard(Activity activity) {
+        View view = activity.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
+
     LoginBean loginBean;
     String tgt;
     private void netWorkLogin(String uname, String pwd) {
@@ -306,9 +355,9 @@ public class LoginActivity2 extends LoginBaseActivity implements GestureDetector
         ;
         try {
             String imei =  AesEncryptUtile.encrypt((String) SPUtils.get(this, "imei", ""), key);
-            OkGo.<String>get(UrlRes.HOME2_URL +"/cas/casApiLoginController")
+            OkGo.<String>get(UrlRes.HOME2_URL +UrlRes.loginUrl)
                     .tag(this)
-                    .params("openid","123456")
+                    .params("openid",AesEncryptUtile.openid)
                     .params("username",s1)
                     .params("password",s2)
                     .params("equipmentId",imei)
@@ -344,6 +393,7 @@ public class LoginActivity2 extends LoginBaseActivity implements GestureDetector
 
                                     if(update != null){
                                         Intent intent = new Intent(LoginActivity2.this,MainActivity.class);
+                                        intent.putExtra("splash","splash");
                                         startActivity(intent);
                                         finish();
                                     }else {
@@ -563,7 +613,7 @@ public class LoginActivity2 extends LoginBaseActivity implements GestureDetector
     private void checkWxBind(final String opendiEncrypt, final String name, final String gender, final String url, final String openid) {
         OkGo.<String>get(UrlRes.HOME2_URL +casWeChatApiLoginControllerUrl)
                 .tag(this)
-                .params("openid","123456")
+                .params("openid",AesEncryptUtile.openid)
                 .params("weChatOpenid",openid)
                 .params("serviceid", MyConstants.wxAppId)
                 .execute(new StringCallback() {
@@ -638,7 +688,7 @@ public class LoginActivity2 extends LoginBaseActivity implements GestureDetector
             String imei =  AesEncryptUtile.encrypt((String) SPUtils.get(this, "imei", ""), key);
             OkGo.<String>get(UrlRes.HOME2_URL +"/cas/casApiLoginController")
                     .tag(this)
-                    .params("openid","123456")
+                    .params("openid",AesEncryptUtile.openid)
                     .params("username",uname)
                     .params("password",pwd)
                     .params("type",s)
@@ -925,7 +975,7 @@ public class LoginActivity2 extends LoginBaseActivity implements GestureDetector
     private void checkYiJianData(String content) {
         OkGo.<String>post(UrlRes.HOME2_URL+ UrlRes.loginTokenVerifyUrl)
                 .tag(this)
-                .params( "openId","123456")
+                .params( "openId",AesEncryptUtile.openid)
                 .params( "loginToken",content)
                 .execute(new StringCallback(){
                     @Override
@@ -1097,7 +1147,7 @@ public class LoginActivity2 extends LoginBaseActivity implements GestureDetector
                             String secret  = AesEncryptUtile.encrypt(Calendar.getInstance().getTimeInMillis()+ "_"+"123456",key);
                             OkGo.<String>post(UrlRes.HOME2_URL+ UrlRes.getPassByFaceUrl)
                                     .tag(this)
-                                    .params( "openId","123456")
+                                    .params( "openId",AesEncryptUtile.openid)
                                     .params( "secret",secret)
                                     .params( "img",s )
                                     .params( "equipmentId",imei)

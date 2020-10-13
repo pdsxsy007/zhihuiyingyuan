@@ -2,44 +2,43 @@ package io.cordova.zhihuiyingyuan.fragment;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
-import com.flyco.tablayout.SlidingTabLayout;
-import com.flyco.tablayout.listener.OnTabSelectListener;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 
 import io.cordova.zhihuiyingyuan.R;
 import io.cordova.zhihuiyingyuan.UrlRes;
 import io.cordova.zhihuiyingyuan.activity.LoginActivity2;
 import io.cordova.zhihuiyingyuan.activity.MyToDoMsgActivity;
+import io.cordova.zhihuiyingyuan.adapter.NewsAdapter2;
 import io.cordova.zhihuiyingyuan.bean.CountBean;
-import io.cordova.zhihuiyingyuan.bean.ItemNewsBean;
-import io.cordova.zhihuiyingyuan.bean.NewsBean;
+import io.cordova.zhihuiyingyuan.bean.HomeNewsBean;
 import io.cordova.zhihuiyingyuan.utils.BadgeView;
+import io.cordova.zhihuiyingyuan.utils.JsonUtil;
 import io.cordova.zhihuiyingyuan.utils.LighterHelper;
 import io.cordova.zhihuiyingyuan.utils.MobileInfoUtils;
 import io.cordova.zhihuiyingyuan.utils.MyApp;
-import io.cordova.zhihuiyingyuan.utils.NoScrollViewPager;
 import io.cordova.zhihuiyingyuan.utils.SPUtils;
 import io.cordova.zhihuiyingyuan.utils.StringUtils;
+import io.cordova.zhihuiyingyuan.utils.ToastUtils;
+import io.cordova.zhihuiyingyuan.utils.ViewUtils;
+import io.cordova.zhihuiyingyuan.web.MyBaseWebUrl;
 import me.samlss.lighter.Lighter;
 import me.samlss.lighter.interfaces.OnLighterListener;
 import me.samlss.lighter.parameter.Direction;
@@ -53,22 +52,36 @@ import me.samlss.lighter.shape.CircleShape;
 
 public class SecondFragment extends BaseFragment {
 
+
+
+    SmartRefreshLayout mSwipeRefreshLayout;
+    RecyclerView recyclerView;
+
+    private int type = 1;
+    private LinearLayoutManager mLinearLayoutManager;
+    RelativeLayout rl_01;
+    RelativeLayout rl_02;
+    RelativeLayout rl_03;
+    RelativeLayout rl_04;
+    TextView tv_01;
+    TextView tv_02;
+    TextView tv_03;
+    TextView tv_04;
+    TextView tv_011;
+    TextView tv_012;
+    TextView tv_013;
+    TextView tv_014;
+
+    private int num = 1;
+
+    RelativeLayout rl_more;
+
     RelativeLayout rl_msg_app;
 
     private BadgeView badge1;
     boolean isLogin = false;
-    private ArrayList<Fragment> mFragments = new ArrayList<>();
 
 
-    NoScrollViewPager mViewPager;
-
-    int num1,num2,num3,num4,num5;
-    String count;
-    SlidingTabLayout mTabLayout_1;
-
-    SmartRefreshLayout mSwipeRefreshLayout;
-    int pos = 0;
-    private int flag = 0;
     @Override
     protected int getLayoutResource() {
         return R.layout.fragment_second;
@@ -76,15 +89,29 @@ public class SecondFragment extends BaseFragment {
 
     @Override
     protected void initView(final View view) {
-        isLogin = !StringUtils.isEmpty((String) SPUtils.get(MyApp.getInstance(),"username",""));
+        isLogin = !StringUtils.isEmpty((String)SPUtils.get(MyApp.getInstance(),"username",""));
 
-        mViewPager = view.findViewById(R.id.vp_2);
-        mTabLayout_1 = view.findViewById(R.id.tl_1);
+
+
         mSwipeRefreshLayout = view.findViewById(R.id.swipeLayout);
 
-
-
+        rl_01 = view.findViewById(R.id.rl_01);
+        rl_02 = view.findViewById(R.id.rl_02);
+        rl_03 = view.findViewById(R.id.rl_03);
+        rl_04 = view.findViewById(R.id.rl_04);
+        tv_01 = view.findViewById(R.id.tv_01);
+        tv_02 = view.findViewById(R.id.tv_02);
+        tv_03 = view.findViewById(R.id.tv_03);
+        tv_04 = view.findViewById(R.id.tv_04);
+        tv_011 = view.findViewById(R.id.tv_011);
+        tv_012 = view.findViewById(R.id.tv_022);
+        tv_013 = view.findViewById(R.id.tv_033);
+        tv_014 = view.findViewById(R.id.tv_044);
+        rl_more = view.findViewById(R.id.rl_more);
+        recyclerView = view.findViewById(R.id.recyclerview);
         rl_msg_app = view.findViewById(R.id.rl_msg_app1);
+        mLinearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayout.VERTICAL,false);
+        recyclerView.setLayoutManager(mLinearLayoutManager);
 
         isLogin = !StringUtils.isEmpty((String) SPUtils.get(MyApp.getInstance(),"userId",""));
         rl_msg_app.setVisibility(View.VISIBLE);
@@ -109,6 +136,142 @@ public class SecondFragment extends BaseFragment {
 
         }
 
+        tv_01.setTextColor(Color.parseColor("#139d7e"));
+        tv_02.setTextColor(Color.parseColor("#8f8f94"));
+        tv_03.setTextColor(Color.parseColor("#8f8f94"));
+        tv_04.setTextColor(Color.parseColor("#8f8f94"));
+        ViewUtils.createLoadingDialog(getActivity());
+        getNewsData(type);
+
+
+        rl_01.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ViewUtils.createLoadingDialog(getActivity());
+                type = 1;
+                num = 1;
+                tv_01.setTextColor(Color.parseColor("#139d7e"));
+                tv_02.setTextColor(Color.parseColor("#8f8f94"));
+                tv_03.setTextColor(Color.parseColor("#8f8f94"));
+                tv_04.setTextColor(Color.parseColor("#8f8f94"));
+                tv_011.setVisibility(View.VISIBLE);
+                tv_012.setVisibility(View.GONE);
+                tv_013.setVisibility(View.GONE);
+                tv_014.setVisibility(View.GONE);
+
+                getNewsData(1);
+            }
+        });
+
+        rl_02.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                ViewUtils.createLoadingDialog(getActivity());
+                type = 2;
+                num = 1;
+                tv_01.setTextColor(Color.parseColor("#8f8f94"));
+                tv_02.setTextColor(Color.parseColor("#139d7e"));
+                tv_03.setTextColor(Color.parseColor("#8f8f94"));
+                tv_04.setTextColor(Color.parseColor("#8f8f94"));
+                tv_011.setVisibility(View.GONE);
+                tv_012.setVisibility(View.VISIBLE);
+                tv_013.setVisibility(View.GONE);
+                tv_014.setVisibility(View.GONE);
+                getNewsData(2);
+            }
+        });
+
+        rl_03.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ViewUtils.createLoadingDialog(getActivity());
+                type = 3;
+                num = 1;
+                tv_01.setTextColor(Color.parseColor("#8f8f94"));
+                tv_02.setTextColor(Color.parseColor("#8f8f94"));
+                tv_03.setTextColor(Color.parseColor("#139d7e"));
+                tv_04.setTextColor(Color.parseColor("#8f8f94"));
+                tv_011.setVisibility(View.GONE);
+                tv_012.setVisibility(View.GONE);
+                tv_013.setVisibility(View.VISIBLE);
+                tv_014.setVisibility(View.GONE);
+                getNewsData(3);
+            }
+        });
+
+        rl_04.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ViewUtils.createLoadingDialog(getActivity());
+                type = 4;
+                num = 1;
+                tv_01.setTextColor(Color.parseColor("#8f8f94"));
+                tv_02.setTextColor(Color.parseColor("#8f8f94"));
+                tv_03.setTextColor(Color.parseColor("#8f8f94"));
+                tv_04.setTextColor(Color.parseColor("#139d7e"));
+                tv_011.setVisibility(View.GONE);
+                tv_012.setVisibility(View.GONE);
+                tv_013.setVisibility(View.GONE);
+                tv_014.setVisibility(View.VISIBLE);
+                getNewsData(4);
+            }
+        });
+
+
+        mSwipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(RefreshLayout refreshlayout) {
+
+                num = 1;
+                switch (type){
+                    case 1:
+                        getRefresh01(type);
+                        break;
+
+                    case 2:
+                        getRefresh02(type);
+                        break;
+
+                    case 3:
+                        getRefresh03(type);
+                        break;
+
+                    case 4:
+                        getRefresh04(type);
+                        break;
+                }
+
+
+                refreshlayout.finishRefresh();
+            }
+        });
+
+        mSwipeRefreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
+            @Override
+            public void onLoadmore(RefreshLayout refreshlayout) {
+
+
+                switch (type){
+                    case 1:
+                        getLoad01(type,refreshlayout);
+                        break;
+
+                    case 2:
+                        getLoad02(type,refreshlayout);
+                        break;
+
+                    case 3:
+                        getLoad03(type,refreshlayout);
+                        break;
+
+                    case 4:
+                        getLoad04(type,refreshlayout);
+                        break;
+                }
+            }
+        });
+
 
         rl_msg_app.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,19 +292,6 @@ public class SecondFragment extends BaseFragment {
             setGuideView();
         }
 
-        getNewsData(view);
-        mSwipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
-            @Override
-            public void onRefresh(RefreshLayout refreshlayout) {
-
-                getNewsData(view);
-
-
-               /* mTabLayout_1.setSelected(true);
-                mTabLayout_1.setCurrentTab(pos);*/
-                refreshlayout.finishRefresh();
-            }
-        });
     }
 
     private void setGuideView() {
@@ -185,15 +335,7 @@ public class SecondFragment extends BaseFragment {
         if(count.equals("")){
             count = "0";
         }
-
-        //badge1.setText(count); // 需要显示的提醒类容
-        if (Integer.parseInt(count) > 99) {
-
-            badge1.setText("99+");
-        }else{
-            badge1.setText(count); // 需要显示的提醒类容
-
-        }
+        badge1.setText(count); // 需要显示的提醒类容
         badge1.setBadgePosition(BadgeView.POSITION_TOP_RIGHT);// 显示的位置.右上角,BadgeView.POSITION_BOTTOM_LEFT,下左，还有其他几个属性
         badge1.setTextColor(Color.WHITE); // 文本颜色
         badge1.setBadgeBackgroundColor(Color.RED); // 提醒信息的背景颜色，自己设置
@@ -210,130 +352,391 @@ public class SecondFragment extends BaseFragment {
 
     }
 
-//    OAMsgListBean3 oaMsgListBean = new OAMsgListBean3();
-//    private void dbDataOAList() {
-//        OkGo.<String>post(UrlRes.HOME_URL + UrlRes.Oaworkflow)
-//                .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
-//                .params("type","1")//（1：待办    2：会议  3:公告）
-//                .params("limit", 15)
-//                .params("page","1")
-//                .execute(new StringCallback() {
-//                    @Override
-//                    public void onSuccess(Response<String> response) {
-//                        //Log.e("s",response.toString());
-//                        oaMsgListBean = JSON.parseObject(response.body(), OAMsgListBean3.class);
-//
-//                        num1 = oaMsgListBean.getCount();
-//                        dbDataOAEmail();
-////                        netWorkDyMsg();
-//
-//                    }
-//                    @Override
-//                    public void onError(Response<String> response) {
-//                        super.onError(response);
-//
-//
-//                    }
-//                });
-//    }
-//    WeidbBean weidbBean = new WeidbBean();
-//    private void getWeiDbData(){
-//        String userId = (String) SPUtils.get(MyApp.getInstance(), "userId", "");
-//        OkGo.<String>post(UrlRes.HOME_URL + UrlRes.workFolwDb)
-//                .params("type","db")
-//                .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
-//                .execute(new StringCallback() {
-//                    @Override
-//                    public void onSuccess(Response<String> response) {
-//                        //Log.e("微应用待办的数据",response.body());
-//                        weidbBean = JSON.parseObject(response.body(),WeidbBean.class);
-//
-//                        num4 = weidbBean.getCount();
-//                        netWorkSqMsg();
-//                    }
-//                });
-//
-//    }
 
 
-
-    CountBean countBean = new CountBean();
-    private void netWorkSqMsg() {
-        OkGo.<String>post(UrlRes.HOME_URL + UrlRes.Query_count)
-                .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
-                .params("type", "sq")
-                .params("workType", "worksq")
+    private void getLoad04(int type, final RefreshLayout refreshlayout) {
+        OkGo.<String>post(UrlRes.HOME_URL + UrlRes.findNewsUrl)
+                .params("pageNum",num)
+                .params("pageSize",25)
+                .params("type",type)
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(Response<String> response) {
-                        //Log.e("s申请",response.body());
-                        countBean = JSON.parseObject(response.body(), CountBean.class);
-                        num5 = countBean.getCount();
+                        Log.e("news",response.body());
+                        HomeNewsBean homeNewsBean = JsonUtil.parseJson(response.body(),HomeNewsBean.class);
+                        boolean success = homeNewsBean.getSuccess();
+                        if(success){
+                            List<HomeNewsBean.Obj> objMore = homeNewsBean.getObj();
+                            if(objMore.size() > 0 ){
+                                obj.addAll(objMore);
+                                adapter2.notifyDataSetChanged();
+                                num += 1;
+                                refreshlayout.finishLoadmore();
+                                adapter2.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
+                                        String newsId = obj.get(position).getNewsId();
 
-                        String obj = countBean1.getObj();//系统消息
+                                        getNewsDetails(newsId);
+                                    }
 
-                        if(obj == null){
-                            obj = "0";
-                        }
-                        //String s = oaMsgListBean.getCount() + oaMsgListBean2.getCount() + Integer.parseInt(countBean1.getObj()) + weidbBean.getCount() + countBean.getCount()+ "";
-                        String s =   + countBean.getCount() + Integer.parseInt(obj)+ "";
+                                    @Override
+                                    public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
+                                        return false;
+                                    }
+                                });
+                            }else {
+                                ToastUtils.showToast(getActivity(),"暂无更多数据!");
+                            }
 
-                        if(null == s){
-                            s = "0";
-                        }
-                        SPUtils.put(MyApp.getInstance(),"count",s+"");
-
-                        count = (String) SPUtils.get(getActivity(), "count", "");
-
-                        if(!count.equals("") && !"0".equals(count)){
-                            remind();
-
-                        }else {
-
-
-                            badge1.hide();
                         }
 
 
                     }
-
                     @Override
                     public void onError(Response<String> response) {
                         super.onError(response);
+
+
                     }
                 });
-
     }
-    CountBean countBean1;
-    /** 获取消息数量*/
 
-    private void netWorkSystemMsg() {
+    private void getLoad03(int type, final RefreshLayout refreshlayout) {
+        OkGo.<String>post(UrlRes.HOME_URL + UrlRes.findNewsUrl)
+                .params("pageNum",num)
+                .params("pageSize",25)
+                .params("type",type)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        Log.e("news",response.body());
+                        HomeNewsBean homeNewsBean = JsonUtil.parseJson(response.body(),HomeNewsBean.class);
+                        boolean success = homeNewsBean.getSuccess();
+                        if(success){
+                            List<HomeNewsBean.Obj> objMore = homeNewsBean.getObj();
+                            if(objMore.size() > 0 ){
+                                obj.addAll(objMore);
+                                adapter2.notifyDataSetChanged();
+                                num += 1;
+                                refreshlayout.finishLoadmore();
+                                adapter2.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
+                                        String newsId = obj.get(position).getNewsId();
 
-        try {
-            String userId = (String) SPUtils.get(MyApp.getInstance(), "userId", "");
-            OkGo.<String>post(UrlRes.HOME_URL + UrlRes.Query_countUnreadMessagesForCurrentUser)
-                    .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
-                    .execute(new StringCallback() {
-                        @Override
-                        public void onSuccess(Response<String> response) {
-                            //Log.e("s___",response.body());
+                                        getNewsDetails(newsId);
+                                    }
 
-                            countBean1 = JSON.parseObject(response.body(), CountBean.class);
-
-                            num3 = Integer.parseInt(countBean1.getObj());
+                                    @Override
+                                    public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
+                                        return false;
+                                    }
+                                });
+                            }else {
+                                ToastUtils.showToast(getActivity(),"暂无更多数据!");
+                            }
 
                         }
-                        @Override
-                        public void onError(Response<String> response) {
-                            super.onError(response);
+
+
+                    }
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+
+
+                    }
+                });
+    }
+
+    private void getRefresh04(final int type) {
+        OkGo.<String>post(UrlRes.HOME_URL + UrlRes.findNewsUrl)
+                .params("pageNum",1)
+                .params("pageSize",25)
+                .params("type",type)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        Log.e("news",response.body());
+                        HomeNewsBean homeNewsBean = JsonUtil.parseJson(response.body(),HomeNewsBean.class);
+                        boolean success = homeNewsBean.getSuccess();
+                        if(success){
+
+                            obj = homeNewsBean.getObj();
+                            adapter2 = new NewsAdapter2(getActivity(),R.layout.list_item_new_news,obj, type);
+                            recyclerView.setAdapter(adapter2);
+                            num = 2;
+                        }
+
+
+                    }
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+
+
+                    }
+                });
+    }
+
+    private void getRefresh03(final int type) {
+        OkGo.<String>post(UrlRes.HOME_URL + UrlRes.findNewsUrl)
+                .params("pageNum",1)
+                .params("pageSize",25)
+                .params("type",type)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        Log.e("news",response.body());
+                        HomeNewsBean homeNewsBean = JsonUtil.parseJson(response.body(),HomeNewsBean.class);
+                        boolean success = homeNewsBean.getSuccess();
+                        if(success){
+
+                            obj = homeNewsBean.getObj();
+                            adapter2 = new NewsAdapter2(getActivity(),R.layout.list_item_new_news,obj, type);
+                            recyclerView.setAdapter(adapter2);
+                            num = 2;
+                        }
+
+
+                    }
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+
+
+                    }
+                });
+    }
+
+    private void getLoad02(int type, final RefreshLayout refreshlayout) {
+        OkGo.<String>post(UrlRes.HOME_URL + UrlRes.findNewsUrl)
+                .params("pageNum",num)
+                .params("pageSize",25)
+                .params("type",type)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        Log.e("news",response.body());
+                        HomeNewsBean homeNewsBean = JsonUtil.parseJson(response.body(),HomeNewsBean.class);
+                        boolean success = homeNewsBean.getSuccess();
+                        if(success){
+                            List<HomeNewsBean.Obj> objMore = homeNewsBean.getObj();
+                            if(objMore.size() > 0 ){
+                                obj.addAll(objMore);
+                                adapter2.notifyDataSetChanged();
+                                num += 1;
+                                refreshlayout.finishLoadmore();
+                                adapter2.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
+                                        String newsId = obj.get(position).getNewsId();
+
+                                        getNewsDetails(newsId);
+                                    }
+
+                                    @Override
+                                    public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
+                                        return false;
+                                    }
+                                });
+                            }else {
+                                ToastUtils.showToast(getActivity(),"暂无更多数据!");
+                            }
 
                         }
-                    });
-        }catch (Exception e){
 
-        }
 
+                    }
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+
+
+                    }
+                });
     }
+
+    private void getRefresh02(final int type) {
+        OkGo.<String>post(UrlRes.HOME_URL + UrlRes.findNewsUrl)
+                .params("pageNum",1)
+                .params("pageSize",25)
+                .params("type",type)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        Log.e("news",response.body());
+                        HomeNewsBean homeNewsBean = JsonUtil.parseJson(response.body(),HomeNewsBean.class);
+                        boolean success = homeNewsBean.getSuccess();
+                        if(success){
+
+                            obj = homeNewsBean.getObj();
+                            adapter2 = new NewsAdapter2(getActivity(),R.layout.list_item_new_news,obj, type);
+                            recyclerView.setAdapter(adapter2);
+                            num = 2;
+                        }
+
+
+                    }
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+
+
+                    }
+                });
+    }
+
+    private void getLoad01(int type, final RefreshLayout refreshlayout) {
+        OkGo.<String>post(UrlRes.HOME_URL + UrlRes.findNewsUrl)
+                .params("pageNum",num)
+                .params("pageSize",25)
+                .params("type",type)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        Log.e("news",response.body());
+                        HomeNewsBean homeNewsBean = JsonUtil.parseJson(response.body(),HomeNewsBean.class);
+                        boolean success = homeNewsBean.getSuccess();
+                        if(success){
+                            List<HomeNewsBean.Obj> objMore = homeNewsBean.getObj();
+                            if(objMore.size() > 0 ){
+                                obj.addAll(objMore);
+                                adapter2.notifyDataSetChanged();
+                                num += 1;
+                                refreshlayout.finishLoadmore();
+                                adapter2.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
+                                        String newsId = obj.get(position).getNewsId();
+
+                                        getNewsDetails(newsId);
+                                    }
+
+                                    @Override
+                                    public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
+                                        return false;
+                                    }
+                                });
+                            }else {
+                                ToastUtils.showToast(getActivity(),"暂无更多数据!");
+                            }
+
+                        }
+
+
+                    }
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+
+
+                    }
+                });
+    }
+    List<HomeNewsBean.Obj> obj;
+    private void getRefresh01(final int type) {
+        OkGo.<String>post(UrlRes.HOME_URL + UrlRes.findNewsUrl)
+                .params("pageNum",1)
+                .params("pageSize",25)
+                .params("type",type)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        Log.e("news",response.body());
+                        HomeNewsBean homeNewsBean = JsonUtil.parseJson(response.body(),HomeNewsBean.class);
+                        boolean success = homeNewsBean.getSuccess();
+                        if(success){
+
+                            obj = homeNewsBean.getObj();
+                            adapter2 = new NewsAdapter2(getActivity(),R.layout.list_item_new_news,obj, type);
+                            recyclerView.setAdapter(adapter2);
+                            num = 2;
+                        }
+
+
+                    }
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+
+
+                    }
+                });
+    }
+
+    private NewsAdapter2 adapter2;
+    private void getNewsData(final int type) {
+        OkGo.<String>post(UrlRes.HOME_URL + UrlRes.findNewsUrl)
+                .params("pageNum",1)
+                .params("pageSize",25)
+                .params("type",type)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        Log.e("news",response.body());
+                        ViewUtils.cancelLoadingDialog();
+                        HomeNewsBean homeNewsBean = JsonUtil.parseJson(response.body(),HomeNewsBean.class);
+                        boolean success = homeNewsBean.getSuccess();
+                        if(success){
+                            obj = homeNewsBean.getObj();
+                            adapter2 = new NewsAdapter2(getActivity(),R.layout.list_item_new_news,obj, type);
+                            recyclerView.setAdapter(adapter2);
+                            adapter2.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
+                                    //Intent intent = new Intent(getActivity(),BaseWebActivity4.class);
+                                    String newsId = obj.get(position).getNewsId();
+
+                                    getNewsDetails(newsId);
+
+
+                                }
+
+                                @Override
+                                public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
+                                    return false;
+                                }
+                            });
+                        }
+
+
+                    }
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+                        ViewUtils.cancelLoadingDialog();
+
+                    }
+                });
+    }
+
+    private void getNewsDetails(final String newsId) {
+        ViewUtils.createLoadingDialog(getActivity());
+        OkGo.<String>post(UrlRes.HOME_URL + UrlRes.getNewsDetailsUrl)
+                .tag(this)
+                .params("newsId",newsId)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        Log.e("newsid",response.body());
+                        ViewUtils.cancelLoadingDialog();
+                        Intent intent = new Intent(getActivity(),MyBaseWebUrl.class);
+                        String url = "http://mobile.havct.edu.cn/portal/portal-yyzy/portal-app/app/newsDetail_native.html?id="+newsId;
+                        intent.putExtra("appUrl",url);
+                        startActivity(intent);
+
+                    }
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+                        Log.e("newsid",response.body());
+                        ViewUtils.cancelLoadingDialog();
+                    }
+                });
+    }
+
 
 
     @Override
@@ -343,19 +746,16 @@ public class SecondFragment extends BaseFragment {
 
 
         }else{  // 在最前端显示 相当于调用了onResume();
-            getNewsData(getView());
             isLogin = !StringUtils.isEmpty((String) SPUtils.get(MyApp.getInstance(),"username",""));
             netInsertPortal("2");
             String count = (String) SPUtils.get(getActivity(),"count","");
-            //Log.e("count-------",count);
+            Log.e("count-------",count);
             //badge1.setText(count);
-            badge1 = new BadgeView(getActivity(), rl_msg_app);
+
             if (!isLogin){
                 badge1.hide();
             }else {
-
-//                dbDataOAList();
-
+                netWorkSystemMsg();
                 //remind(rl_msg_app);
             }
 
@@ -374,7 +774,7 @@ public class SecondFragment extends BaseFragment {
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(Response<String> response) {
-                        //Log.e("sdsaas",response.body());
+                        Log.e("sdsaas",response.body());
 
                     }
 
@@ -387,7 +787,28 @@ public class SecondFragment extends BaseFragment {
     }
 
 
+    CountBean countBean1;
+    private void netWorkSystemMsg() {
 
+        OkGo.<String>post(UrlRes.HOME_URL + UrlRes.Query_countUnreadMessagesForCurrentUser)
+                .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        Log.e("s",response.toString());
+
+                        countBean1 = JSON.parseObject(response.body(), CountBean.class);
+                        //yy_msg_num.setText(countBean.getCount()+"");
+                        netWorkOAToDoMsg();//OA待办
+
+                    }
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+
+                    }
+                });
+    }
 
     CountBean countBean2;
     /**OA消息列表*/
@@ -399,163 +820,57 @@ public class SecondFragment extends BaseFragment {
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(Response<String> response) {
-                        //Log.e("s",response.toString());
+                        Log.e("s",response.toString());
 
                         countBean2 = JSON.parseObject(response.body(), CountBean.class);
-
+                        netWorkDyMsg();
                     }
 
                     @Override
                     public void onError(Response<String> response) {
                         super.onError(response);
-                        //Log.e("sssssss",response.toString());
+                        Log.e("sssssss",response.toString());
                     }
                 });
     }
 
-
-
-
-    List<String> newstitle;
-    List<String> newstitleUrl;
-    List<List<ItemNewsBean>> lists;
-    List<String> mlists = new ArrayList<>();
-
-    private void getNewsData(final View view) {
-        OkGo.<String>post(UrlRes.HOME_URL + UrlRes.findNewsUrl)
-                .params("isReturnWithUrl","1")
+    CountBean countBean3;
+    String count;
+    private void netWorkDyMsg() {
+        OkGo.<String>post(UrlRes.HOME_URL + UrlRes.Query_count)
+                .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
+                .params("type", "dy")
+                .params("workType", "workdb")
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(Response<String> response) {
-                        //Log.e("news",response.body());
-                        Gson gson = new Gson();
-//                        NewsBean newsBean = JsonUtil.parseJson(response.body(),NewsBean.class);
-//                        JsonObject jsonObject = new JsonObject();
+                        Log.e("s",response.toString());
+
+                        countBean3 = JSON.parseObject(response.body(), CountBean.class);
+
+                        String s = countBean2.getCount() + Integer.parseInt(countBean1.getObj()) + countBean3.getCount() + "";
 
 
-
-                        NewsBean newsBean = gson.fromJson(response.body(), new TypeToken<NewsBean>(){}.getType());
-
-
-                        Map<String, List<ItemNewsBean>> obj = (Map<String, List<ItemNewsBean>>) newsBean.getObj();
-
-                        newstitle = new ArrayList<>();
-                        newstitleUrl = new ArrayList<>();
-                        int i = 0;
-                        List<Map<String,List<ItemNewsBean>>> list = new ArrayList<>();
-
-                        lists = new ArrayList<>();
-
-                        mFragments.clear();
-                        newstitle.clear();
-                        mlists.clear();
-                        lists.clear();
-                        for (Map.Entry<String, List<ItemNewsBean>> entry : obj.entrySet()) {
-
-                            String key = entry.getKey();
-                            if(key.contains("[@gilight]")){//最版的
-                                flag = 1;
-                                String[] split = key.split("\\[@gilight\\]");
-                                List<ItemNewsBean> value = entry.getValue();
-
-                                String s = gson.toJson(value);
-                                mlists.add(s);
-                                newstitle.add(split[0]);
-                                newstitleUrl.add(split[1]);
-                                lists.add(value);
-                            }else {//老版的
-                                flag = 0;
-                                List<ItemNewsBean> value = entry.getValue();
-
-                                String s = gson.toJson(value);
-                                mlists.add(s);
-                                newstitle.add(key);
-                                lists.add(value);
-                            }
-
+                        if(null == s){
+                            s = "0";
                         }
+                        SPUtils.put(MyApp.getInstance(),"count",s+"");
 
-                        initTablayout(view,flag);
+                        count = (String) SPUtils.get(getActivity(), "count", "");
+                        if(!count.equals("") && !"0".equals(count)){
+                            remind();
+                            SPUtils.get(getActivity(),"count","");
+                        }else {
+                            badge1.hide();
+                        }
                     }
+
                     @Override
                     public void onError(Response<String> response) {
                         super.onError(response);
-
 
                     }
                 });
     }
 
-
-
-    private void initTablayout(View view, int flag) {
-
-        if(flag == 0){
-            for (int i = 0; i < newstitle.size(); i++) {
-
-                mFragments.add(SimpleCardFragment2.getInstance(mlists.get(i),i,newstitle.get(i)));
-            }
-
-        }else {
-            for (int i = 0; i < newstitle.size(); i++) {
-
-                SimpleCardFragment simpleCardFragment = new SimpleCardFragment(mlists.get(i), i, newstitleUrl.get(i), newstitle.get(i));
-                mFragments.add(simpleCardFragment);
-            }
-//            for (int i = 0; i < newstitle.size(); i++) {
-//
-//                mFragments.add(SimpleCardFragment2.getInstance(mlists.get(i),i,newstitle.get(i)));
-//            }
-
-        }
-
-        MyPagerAdapter adapter = new MyPagerAdapter(getChildFragmentManager());
-        mViewPager.setAdapter(adapter);
-
-        mTabLayout_1.setViewPager(mViewPager);
-
-        mTabLayout_1.setOnTabSelectListener(new OnTabSelectListener() {
-            @Override
-            public void onTabSelect(int i) {
-                mViewPager.setCurrentItem(i);
-                pos = i;
-            }
-
-            @Override
-            public void onTabReselect(int i) {
-
-            }
-        });
-
-        mTabLayout_1.setCurrentTab(pos);
-    }
-
-
-    private class MyPagerAdapter extends FragmentStatePagerAdapter {
-        public MyPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public int getCount() {
-            return mFragments.size();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return newstitle.get(position);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return mFragments.get(position);
-        }
-
-
-        @Override
-        public int getItemPosition(@NonNull Object object) {
-            return POSITION_NONE;
-        }
-
-    }
 }

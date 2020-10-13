@@ -4,8 +4,7 @@
     android:layout_height="match_parent"
     xmlns:tl="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    app:ignore="NamespaceTypo">
+    android:orientation="vertical">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp40"
@@ -51,7 +50,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:descendantFocusability="blocksDescendants"
                 >
 
                 <RelativeLayout
@@ -127,29 +125,121 @@
                     android:background="@color/white2" />
 
 
-                <com.flyco.tablayout.SlidingTabLayout
-                    android:id="@+id/tl_1"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:background="#ffffff"
-                    android:paddingBottom="5dp"
-                    android:paddingTop="5dp"
-                    tl:tl_tab_padding="0dp"
+                    android:layout_height="@dimen/dp40"
+                    android:orientation="horizontal"
+                    android:background="@color/white"
+                    >
+                    <RelativeLayout
+                        android:id="@+id/rl_01"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        >
+                        <TextView
+                            android:id="@+id/tv_01"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="公文公告"
+                            android:layout_centerInParent="true"
+                            android:textColor="@color/colorPrimary"
+                            />
+                        <TextView
+                            android:id="@+id/tv_011"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_alignParentBottom="true"
+                            android:background="@color/colorPrimary"
+                            />
+                    </RelativeLayout>
 
-                    tl:tl_tab_width="85dp"
-                    tl:tl_iconVisible="false"
-                    tl:tl_indicator_color="@color/colorPrimary"
-                    tl:tl_textSelectColor="@color/colorPrimary"
-                    tl:tl_textUnselectColor="#66000000"
-                    tl:tl_underline_color="#DDDDDD"
-                    tl:tl_underline_height="1dp"/>
+                    <RelativeLayout
+                        android:id="@+id/rl_02"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        >
+                        <TextView
+                            android:id="@+id/tv_02"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="综合新闻"
+                            android:layout_centerInParent="true"
+
+                            />
+                        <TextView
+                            android:id="@+id/tv_022"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_alignParentBottom="true"
+                            android:background="@color/colorPrimary"
+                            android:visibility="gone"
+                            />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/rl_03"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        >
+                        <TextView
+                            android:id="@+id/tv_03"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="党办动态"
+                            android:layout_centerInParent="true"
+                            />
+                        <TextView
+                            android:id="@+id/tv_033"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_alignParentBottom="true"
+                            android:background="@color/colorPrimary"
+                            android:visibility="gone"
+                            />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/rl_04"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        >
+                        <TextView
+                            android:id="@+id/tv_04"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="纪检动态"
+                            android:layout_centerInParent="true"
+                            />
+                        <TextView
+                            android:id="@+id/tv_044"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_alignParentBottom="true"
+                            android:background="@color/colorPrimary"
+                            android:visibility="gone"
+                            />
 
 
+                    </RelativeLayout>
+                </LinearLayout>
 
-                <io.cordova.zhihuiyingyuan.utils.NoScrollViewPager
-                    android:id="@+id/vp_2"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content">
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recyclerview"
+                        android:background="@color/white"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        >
+
+                    </android.support.v7.widget.RecyclerView>
+                </RelativeLayout>
 
 
 

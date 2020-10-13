@@ -1234,6 +1234,7 @@ public class HelpActivity extends AppCompatActivity implements GestureDetector.O
             String content = AesEncryptUtile.encrypt(s3, key);
 
             OkGo.<String>post(HOME_URL+addPortalReadingAccessUrl)
+                    .tag(this)
                     .params("json", content)
                     .execute(new StringCallback() {
                         @Override

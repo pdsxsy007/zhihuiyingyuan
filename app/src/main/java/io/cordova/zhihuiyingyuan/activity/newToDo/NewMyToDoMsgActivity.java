@@ -123,6 +123,7 @@ public class NewMyToDoMsgActivity extends BaseActivity2 {
     private void netWorkSystemMsg() {
         String userId = (String) SPUtils.get(MyApp.getInstance(), "userId", "");
         OkGo.<String>post(UrlRes.HOME_URL + UrlRes.countUserMessagesByTypeUrl)
+                .tag(this)
                 .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
                 .params("type","0")
                 .execute(new StringCallback() {
@@ -171,6 +172,7 @@ public class NewMyToDoMsgActivity extends BaseActivity2 {
 
     private void netWorkSqMsg() {
         OkGo.<String>post(UrlRes.HOME_URL + UrlRes.countUserMessagesByTypeUrl)
+                .tag(this)
                 .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
                 .params("type", "5")
                 .execute(new StringCallback() {
@@ -191,6 +193,7 @@ public class NewMyToDoMsgActivity extends BaseActivity2 {
     }
     private void netWorkOAToDoMsg2() {
         OkGo.<String>post(UrlRes.HOME_URL + UrlRes.countUserMessagesByTypeUrl)
+                .tag(this)
                 .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
                 .params("type", "3")
                 .execute(new StringCallback() {
@@ -211,6 +214,7 @@ public class NewMyToDoMsgActivity extends BaseActivity2 {
 
     private void netWorkOAToDoMsg3() {
         OkGo.<String>post(UrlRes.HOME_URL + UrlRes.countUserMessagesByTypeUrl)
+                .tag(this)
                 .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
                 .params("type", "4")
                 .execute(new StringCallback() {
@@ -233,6 +237,7 @@ public class NewMyToDoMsgActivity extends BaseActivity2 {
 
     private void netWorkOAToDoMsg1() {
         OkGo.<String>post(UrlRes.HOME_URL + UrlRes.countUserMessagesByTypeUrl)
+                .tag(this)
                 .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
                 .params("type", "2")
                 .execute(new StringCallback() {
@@ -258,6 +263,7 @@ public class NewMyToDoMsgActivity extends BaseActivity2 {
     }
     private void netWorkOAToDoMsg() {
         OkGo.<String>post(UrlRes.HOME_URL + UrlRes.countUserMessagesByTypeUrl)
+                .tag(this)
                 .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
                 .params("type", "1")
                 .execute(new StringCallback() {

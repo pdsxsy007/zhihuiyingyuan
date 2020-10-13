@@ -105,7 +105,8 @@ public class UpdatePwdInfoActivity extends BaseActivity implements View.OnClickL
                     String pwdNew = URLEncoder.encode(AesEncryptUtile.encrypt(newConfirmP, key), "UTF-8");
                     String type0 = URLEncoder.encode(AesEncryptUtile.encrypt(type, key), "UTF-8");
                     OkGo.<String>get(UrlRes.HOME2_URL +updatePasswordUrl)
-                            .params("openId","123456")
+                            .tag(this)
+                            .params("openId",AesEncryptUtile.openid)
                             .params("memberId",member)
                             .params("oldPassword",pwdOld)
                             .params("memberPwd",pwdNew)
@@ -256,7 +257,7 @@ public class UpdatePwdInfoActivity extends BaseActivity implements View.OnClickL
 
     CurrencyBean currencyBean;
     private void initRelieve() {
-        OkGo.<String>get(UrlRes.HOME4_URL + UrlRes.Relieve_Registration_Id)
+        OkGo.<String>get(UrlRes.HOME_URL + UrlRes.Relieve_Registration_Id)
                 .tag("Jpush")
                 .params("userId", (String) SPUtils.get(MyApp.getInstance(), "userId", ""))
                 .params("portalEquipmentMemberEquipmentId", (String) SPUtils.get(MyApp.getInstance(), "registrationId", ""))

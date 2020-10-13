@@ -127,6 +127,7 @@ public class DeviceManagerActivity extends BaseActivity {
           //Log.e("获取到的数据为",DEVICE_ID);
 
             OkGo.<String>post(UrlRes.HOME_URL+UrlRes.addTrustDevice)
+                    .tag(this)
                     .params("portalTrustDeviceNumber",DEVICE_ID)
                     .params("portalTrustDeviceType","android")
                     .params("portalTrustDeviceName", android.os.Build.DEVICE )
@@ -216,6 +217,7 @@ public class DeviceManagerActivity extends BaseActivity {
        //
         String DEVICE_ID = MobileInfoUtils.getIMEI(this);
         OkGo.<String>post(UrlRes.HOME_URL+UrlRes.addTrustDevice)
+                .tag(this)
                 .params("portalTrustDeviceNumber",DEVICE_ID)
                 .params("portalTrustDeviceType","android")
                 .params("portalTrustDeviceName", android.os.Build.DEVICE )
@@ -325,6 +327,7 @@ public class DeviceManagerActivity extends BaseActivity {
 
         final String DEVICE_ID = MobileInfoUtils.getIMEI(this);
         OkGo.<String>post(UrlRes.HOME_URL + UrlRes.trustDeviceList)
+                .tag(this)
                 .params("userName",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
                 .execute(new StringCallback(){
                     @Override
@@ -363,6 +366,7 @@ public class DeviceManagerActivity extends BaseActivity {
                                                     ToastUtils.showToast(getApplicationContext(),"不能删除主设备");
                                                 }else{
                                                     OkGo.<String>post(UrlRes.HOME_URL + UrlRes.updateTrustDevice)
+                                                            .tag(this)
                                                             .params("portalTrustDeviceNumber", dataList.get(position).getPortalTrustDeviceNumber())
                                                             .params("portalTrustDeviceType", dataList.get(position).getPortalTrustDeviceType())
                                                             .params("portalTrustDeviceName", dataList.get(position).getPortalTrustDeviceName())

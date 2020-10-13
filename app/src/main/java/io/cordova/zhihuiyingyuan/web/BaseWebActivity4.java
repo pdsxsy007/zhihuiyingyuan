@@ -147,6 +147,7 @@ import me.samlss.lighter.interfaces.OnLighterListener;
 import me.samlss.lighter.parameter.Direction;
 import me.samlss.lighter.parameter.LighterParameter;
 import me.samlss.lighter.parameter.MarginOffset;
+import me.yokeyword.fragmentation.SupportActivity;
 import okhttp3.Headers;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -162,7 +163,7 @@ import static io.cordova.zhihuiyingyuan.utils.MyApp.getInstance;
 import static io.cordova.zhihuiyingyuan.utils.PermissionsUtil.SETTINGS_REQ_CODE;
 
 @SuppressLint("Registered")
-public class BaseWebActivity4 extends AppCompatActivity implements GestureDetector.OnGestureListener,PermissionsUtil.IPermissionsCallback {
+public class BaseWebActivity4 extends SupportActivity implements GestureDetector.OnGestureListener,PermissionsUtil.IPermissionsCallback {
     protected AgentWeb mAgentWeb;
 
     @BindView(R.id.webView)
@@ -941,7 +942,7 @@ public class BaseWebActivity4 extends AppCompatActivity implements GestureDetect
 
 
 
-            if (url.contains("http://platform.gilight.cn/cas/login")) {
+            if (url.contains("http://mobile.havct.edu.cn/cas/login")) {
                 if (StringUtils.isEmpty((String)SPUtils.get(MyApp.getInstance(),"username","")) || tgc.equals("")){
                     Intent intent = new Intent(getApplicationContext(),LoginActivity2.class);
                     startActivity(intent);
@@ -1003,7 +1004,7 @@ public class BaseWebActivity4 extends AppCompatActivity implements GestureDetect
                 return true;
 
             }else {
-                if (url.contains("http://platform.gilight.cn/cas/login")) {
+                if (url.contains("http://mobile.havct.edu.cn/cas/login")) {
                     if (StringUtils.isEmpty((String)SPUtils.get(MyApp.getInstance(),"username","")) || tgc.equals("")){
                         Intent intent = new Intent(getApplicationContext(),LoginActivity2.class);
                         startActivity(intent);
@@ -1021,7 +1022,7 @@ public class BaseWebActivity4 extends AppCompatActivity implements GestureDetect
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            CookieUtils.syncCookie("http://platform.gilight.cn","CASTGC="+tgc,getApplication());
+            CookieUtils.syncCookie("http://mobile.havct.edu.cn","CASTGC="+tgc,getApplication());
             if (!StringUtils.isEmpty(appId)){
                 start =  Calendar.getInstance().getTimeInMillis() ;
                 Log.i("Info", "start:  " + start );
@@ -1101,7 +1102,7 @@ public class BaseWebActivity4 extends AppCompatActivity implements GestureDetect
 
 
 
-            if (url.contains("http://platform.gilight.cn/cas/login")) {
+            if (url.contains("http://mobile.havct.edu.cn/cas/login")) {
                 if (StringUtils.isEmpty((String)SPUtils.get(MyApp.getInstance(),"username","")) || tgc.equals("")){
                     Intent intent = new Intent(getApplicationContext(),LoginActivity2.class);
                     startActivity(intent);
@@ -1131,7 +1132,7 @@ public class BaseWebActivity4 extends AppCompatActivity implements GestureDetect
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
 
-            CookieUtils.syncCookie("http://platform.gilight.cn","CASTGC="+tgc,getApplication());
+            CookieUtils.syncCookie("http://mobile.havct.edu.cn","CASTGC="+tgc,getApplication());
             if (!StringUtils.isEmpty(appId)){
                 start =  Calendar.getInstance().getTimeInMillis() ;
                 Log.i("Info", "start:  " + start );
@@ -3027,6 +3028,14 @@ public class BaseWebActivity4 extends AppCompatActivity implements GestureDetect
         mLocationClient.stop();
         if(requestCode == 0){
             getMyLocation();
+        }
+    }
+
+
+    @Override
+    public void onBackPressedSupport() {
+        if (!mAgentWeb.back()) {
+            super.onBackPressedSupport();
         }
     }
 

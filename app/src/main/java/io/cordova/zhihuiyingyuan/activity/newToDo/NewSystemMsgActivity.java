@@ -197,6 +197,7 @@ public class NewSystemMsgActivity extends BaseActivity2 {
     private void netWorkSysMsgListOnRefresh(final RefreshLayout refreshlayout) {
         num = 1;
         OkGo.<String>post(UrlRes.HOME_URL + UrlRes.findUserMessagesByTypeUrl)
+                .tag(this)
                 .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
                 .params("type",type)
                 .params("pageSize", 20)
@@ -248,6 +249,7 @@ public class NewSystemMsgActivity extends BaseActivity2 {
     private void netWorkSysMsgList() {
         String userId = (String) SPUtils.get(MyApp.getInstance(), "userId", "");
         OkGo.<String>post(UrlRes.HOME_URL + UrlRes.findUserMessagesByTypeUrl)
+                .tag(this)
                 .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
                 .params("type",type)
                 .params("pageSize", 20)

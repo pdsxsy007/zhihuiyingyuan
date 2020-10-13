@@ -278,7 +278,7 @@ public class FindPwdActivity extends BaseActivity implements View.OnClickListene
             String contact = URLEncoder.encode(AesEncryptUtile.encrypt(et_type.getText().toString().trim(), key), "UTF-8");
             final String vcode = URLEncoder.encode(AesEncryptUtile.encrypt(code, key), "UTF-8");
             OkGo.<String>get(UrlRes.HOME2_URL +verificationUrl)
-                    .params("openid","123456")
+                    .params("openid",AesEncryptUtile.openid)
                     .params("memberId",username)
                     .params("type",type0)
                     .params("verificationCode",vcode)
@@ -328,7 +328,7 @@ public class FindPwdActivity extends BaseActivity implements View.OnClickListene
             String type0 = URLEncoder.encode(AesEncryptUtile.encrypt(type+"", key), "UTF-8");
             String contact = URLEncoder.encode(AesEncryptUtile.encrypt(et_type.getText().toString().trim(), key), "UTF-8");
             OkGo.<String>get(UrlRes.HOME2_URL +sendVerificationUrl)
-                    .params("openId","123456")
+                    .params("openId",AesEncryptUtile.openid)
                     .params("dlm",username)
                     .params("type",type0)
                     .params("contact",contact)
@@ -373,7 +373,7 @@ public class FindPwdActivity extends BaseActivity implements View.OnClickListene
             //String username = URLEncoder.encode(AesEncryptUtile.encrypt(content, key), "UTF-8");
             String username = AesEncryptUtile.encrypt(content + "_" + Calendar.getInstance().getTimeInMillis(), key);
             OkGo.<String>get(UrlRes.HOME2_URL +getUserInfoByMemberIdUrl)
-                    .params("openId","123456")
+                    .params("openId",AesEncryptUtile.openid)
                     .params("memberUsername",username)
                     .execute(new StringCallback() {
                         @Override

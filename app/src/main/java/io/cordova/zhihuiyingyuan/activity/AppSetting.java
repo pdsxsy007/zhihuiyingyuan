@@ -214,6 +214,7 @@ public class AppSetting extends BaseActivity2 implements FingerprintHelper.Simpl
                 flag = 0;
             }else {
                // msgNotice.setChecked(true);
+                //msgNotice.setColorFilter(R.color.colorPrimary);
                 msgNotice.setImageResource(R.mipmap.switch_open_icon);
                 flag = 1;
             }
@@ -338,8 +339,8 @@ public class AppSetting extends BaseActivity2 implements FingerprintHelper.Simpl
                                         } else {
                                             m_Dialog.show();
                                             Intent intent = new Intent(AppSetting.this,InfoDetailsActivity2.class);
-                                            intent.putExtra("appUrl","https://imtt.dd.qq.com/16891/apk/F7C4943F9B8A9B3F3B8B61FD9FA5AA0B.apk");
-                                            intent.putExtra("title2","下载地址");
+                                            intent.putExtra("appUrl", portalVersionDownloadAdress);
+                                            intent.putExtra("title2", "下载地址");
                                             startActivity(intent);
                                         }
 
@@ -349,8 +350,8 @@ public class AppSetting extends BaseActivity2 implements FingerprintHelper.Simpl
                                     } else {//服务器第二位版本号大于本地第二位版本号 不执行更新操作
                                         m_Dialog.show();
                                         Intent intent = new Intent(AppSetting.this,InfoDetailsActivity2.class);
-                                        intent.putExtra("appUrl","https://imtt.dd.qq.com/16891/apk/F7C4943F9B8A9B3F3B8B61FD9FA5AA0B.apk");
-                                        intent.putExtra("title2","下载地址");
+                                        intent.putExtra("appUrl", portalVersionDownloadAdress);
+                                        intent.putExtra("title2", "下载地址");
                                         startActivity(intent);
                                     }
 
@@ -359,8 +360,8 @@ public class AppSetting extends BaseActivity2 implements FingerprintHelper.Simpl
                                 } else {//服务器主版本号大于本地版本号 执行更新操作
                                     m_Dialog.show();
                                     Intent intent = new Intent(AppSetting.this,InfoDetailsActivity2.class);
-                                    intent.putExtra("appUrl","https://imtt.dd.qq.com/16891/apk/F7C4943F9B8A9B3F3B8B61FD9FA5AA0B.apk");
-                                    intent.putExtra("title2","下载地址");
+                                    intent.putExtra("appUrl", portalVersionDownloadAdress);
+                                    intent.putExtra("title2", "下载地址");
                                     startActivity(intent);
                                 }
                             }
@@ -495,7 +496,7 @@ public class AppSetting extends BaseActivity2 implements FingerprintHelper.Simpl
 
     CurrencyBean currencyBean;
     private void initRelieve() {
-        OkGo.<String>get(UrlRes.HOME4_URL + UrlRes.Relieve_Registration_Id)
+        OkGo.<String>get(UrlRes.HOME_URL + UrlRes.Relieve_Registration_Id)
                 .tag("Jpush")
                 .params("userId", (String) SPUtils.get(MyApp.getInstance(), "userId", ""))
                 .params("portalEquipmentMemberEquipmentId", (String) SPUtils.get(MyApp.getInstance(), "registrationId", ""))

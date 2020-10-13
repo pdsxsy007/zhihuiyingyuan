@@ -5,8 +5,12 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.net.http.SslError;
@@ -15,7 +19,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -24,7 +31,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.JavascriptInterface;
 import android.webkit.SslErrorHandler;
@@ -62,12 +68,15 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -80,11 +89,10 @@ import io.cordova.zhihuiyingyuan.UrlRes;
 import io.cordova.zhihuiyingyuan.activity.LoginActivity2;
 import io.cordova.zhihuiyingyuan.bean.AppOrthBean;
 import io.cordova.zhihuiyingyuan.bean.BaseBean;
-import io.cordova.zhihuiyingyuan.bean.LoginBean;
+import io.cordova.zhihuiyingyuan.bean.LocationBean;
 import io.cordova.zhihuiyingyuan.utils.AesEncryptUtile;
 import io.cordova.zhihuiyingyuan.utils.CookieUtils;
 import io.cordova.zhihuiyingyuan.utils.DensityUtil;
-import io.cordova.zhihuiyingyuan.utils.GpsUtils;
 import io.cordova.zhihuiyingyuan.utils.JsonUtil;
 import io.cordova.zhihuiyingyuan.utils.MobileInfoUtils;
 import io.cordova.zhihuiyingyuan.utils.MyApp;
@@ -92,7 +100,6 @@ import io.cordova.zhihuiyingyuan.utils.SPUtils;
 import io.cordova.zhihuiyingyuan.utils.ScreenSizeUtils;
 import io.cordova.zhihuiyingyuan.utils.SoundPoolUtils;
 import io.cordova.zhihuiyingyuan.utils.StringUtils;
-import io.cordova.zhihuiyingyuan.utils.T;
 import io.cordova.zhihuiyingyuan.utils.ToastUtils;
 import io.cordova.zhihuiyingyuan.utils.ViewUtils;
 import io.cordova.zhihuiyingyuan.widget.MyDialog;
@@ -109,7 +116,6 @@ import static io.cordova.zhihuiyingyuan.UrlRes.HOME_URL;
 import static io.cordova.zhihuiyingyuan.UrlRes.addPortalReadingAccessUrl;
 import static io.cordova.zhihuiyingyuan.UrlRes.functionInvocationLogUrl;
 import static io.cordova.zhihuiyingyuan.utils.AesEncryptUtile.key;
-import static io.cordova.zhihuiyingyuan.utils.MyApp.getInstance;
 
 
 /**
@@ -119,7 +125,7 @@ import static io.cordova.zhihuiyingyuan.utils.MyApp.getInstance;
  */
 
 @SuppressLint("Registered")
-public class ClassWebActivity extends AppCompatActivity implements GestureDetector.OnGestureListener {
+public class MyBaseWebUrl extends AppCompatActivity implements GestureDetector.OnGestureListener {
     protected AgentWeb mAgentWeb;
 
     @BindView(R.id.webView)
@@ -128,7 +134,7 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
     @BindView(R.id.layout_close)
     RelativeLayout rvClose;
 
-     @BindView(R.id.tv_title)
+    @BindView(R.id.tv_title)
     TextView mTitleTextView;
     @BindView(R.id.rl_no)
     RelativeLayout rl_no;
@@ -159,23 +165,16 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
     GestureDetector gestureDetector;
     protected static final float FLIP_DISTANCE = 400;
 
-    private String url = "";
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
         ButterKnife.bind(this);
-
         gestureDetector = new GestureDetector(this,this);
         mLinearLayout = (LinearLayout) this.findViewById(R.id.container);
         rvClose.setVisibility(View.GONE);
-        String rolecodes = (String) SPUtils.get(getApplicationContext(),"rolecodes","");
-        if(rolecodes.contains("student")){
-            url = "http://mobile.havct.edu.cn/microapplication/wyy/kcb_student.html";
-        }else {
-            url = "http://mobile.havct.edu.cn/microapplication/wyy/kcb_teacher.html";
-        }
+
         tgc = (String) SPUtils.get(getApplicationContext(), "TGC", "");
         appServiceUrl = getIntent().getStringExtra("appUrl");
 
@@ -204,108 +203,7 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
         }else {
             rbSc.setVisibility(View.GONE);
         }
-
-
-        String time_login = (String) SPUtils.get(MyApp.getInstance(), "time", "");
-        if (time_login.equals("")) {
-            time_login = Calendar.getInstance().getTimeInMillis() + "";
-        }
-
-        long nowTime = Calendar.getInstance().getTimeInMillis();
-        long l = nowTime - Long.parseLong(time_login);
-        long l1 = l / 1000 / 60 / 60;
-        if (l1 >= 0) {
-            netWorkLogin();
-        }else {
-            //showWebView();
-        }
-
-
-
-        netWorkIsCollection();
-        initListener();
-
-        String home05 = (String) SPUtils.get(MyApp.getInstance(), "home05", "");
-        if(home05.equals("")){
-            setGuideView();
-        }
-
-        sBegin = Calendar.getInstance().getTimeInMillis() + "";
-
-        s1 = stringToDate(sBegin);
-
-
-    }
-
-    private String sname;
-    private String spaw;
-    LoginBean loginBean;
-    String tgt;
-
-    private void netWorkLogin() {
-        try {
-            String phone = (String) SPUtils.get(MyApp.getInstance(), "phone", "");
-            String pwd = (String) SPUtils.get(MyApp.getInstance(), "pwd", "");
-
-//            URLEncoder.encode( ,"UTF-8")
-            sname = URLEncoder.encode(AesEncryptUtile.encrypt(phone, key), "UTF-8");
-            spaw = URLEncoder.encode(AesEncryptUtile.encrypt(pwd, key), "UTF-8");
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        OkGo.<String>get(UrlRes.HOME2_URL + UrlRes.loginUrl)
-                .tag(this)
-                .params("openid", AesEncryptUtile.openid)
-                .params("username", sname)
-                .params("password", spaw)
-                .execute(new StringCallback() {
-                    @Override
-                    public void onSuccess(Response<String> response) {
-                        Log.e("classWebActivity", response.body());
-
-                        loginBean = JSON.parseObject(response.body(), LoginBean.class);
-                        if (loginBean.isSuccess()) {
-
-                            try {
-                                CookieManager cookieManager = CookieManager.getInstance();
-                                cookieManager.removeAllCookie();
-
-                                tgt = AesEncryptUtile.decrypt(loginBean.getAttributes().getTgt(), key);
-                                String userName = AesEncryptUtile.decrypt(loginBean.getAttributes().getUsername(), key);
-
-
-                                String userId = AesEncryptUtile.encrypt(userName + "_" + Calendar.getInstance().getTimeInMillis(), key);
-                                SPUtils.put(MyApp.getInstance(), "time", Calendar.getInstance().getTimeInMillis() + "");
-                                SPUtils.put(MyApp.getInstance(), "userId", userId);
-                                SPUtils.put(MyApp.getInstance(), "personName", userName);
-                                SPUtils.put(getApplicationContext(), "TGC", tgt);
-                                SPUtils.put(getApplicationContext(), "username", sname);
-                                SPUtils.put(getApplicationContext(), "password", spaw);
-                                webView.setWebViewClient(mWebViewClient);
-                                webView.loadUrl(HOME_URL+"/portal/login/appLogin");
-                                Intent intent = new Intent();
-                                intent.putExtra("refreshService", "dongtai");
-                                intent.setAction("refresh2");
-                                sendBroadcast(intent);
-                                showWebView();
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            SPUtils.put(getApplicationContext(), "username", "");
-                        }
-                    }
-                });
-    }
-
-    private void showWebView() {
-        Log.e("myurl","appwiget执行");
-        String tgc = (String) SPUtils.get(ClassWebActivity.this, "TGC", "");
+        String tgc = (String) SPUtils.get(MyBaseWebUrl.this, "TGC", "");
         CookieUtils.syncCookie("http://mobile.havct.edu.cn","CASTGC="+tgc,getApplication());
         mAgentWeb = AgentWeb.with(this)
                 .setAgentWebParent(mLinearLayout, new LinearLayout.LayoutParams(-1, -1))
@@ -319,16 +217,164 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
                 .setWebLayout(new WebLayout4(this))
                 .setOpenOtherPageWays(DefaultWebClient.OpenOtherPageWays.ASK)//打开其他应用时，弹窗咨询用户是否前往其他应用
                 .interceptUnkownUrl() //拦截找不到相关页面的Scheme
-                .setAgentWebWebSettings(getSettings())//设置 IAgentWebSettings。
+                //.setAgentWebWebSettings(getSettings())//设置 IAgentWebSettings。
                 .createAgentWeb()
                 .ready()
-                .go(url);
+                .go(appServiceUrl);
 
 
         mAgentWeb.getWebCreator().getWebView().setOverScrollMode(WebView.OVER_SCROLL_NEVER);
         mAgentWeb.getJsInterfaceHolder().addJavaObject("android",new AndroidInterface());
+
+
+        netWorkIsCollection();
+        initListener();
+
+        String home05 = (String) SPUtils.get(MyApp.getInstance(), "home05", "");
+        if(home05.equals("")){
+            setGuideView();
+        }
+
+        sBegin = Calendar.getInstance().getTimeInMillis() + "";
+
+        s1 = stringToDate(sBegin);
+        String latitude = (String) SPUtils.get(MyApp.getInstance(), "latitude", "");
+        String longitude = (String) SPUtils.get(MyApp.getInstance(), "longitude", "");
+        if(latitude.equals("") || longitude.equals("")){
+            //setListener();
+            cameraTask2();
+
+        }
+
     }
 
+    private static final int RC_CAMERA_PERM2 = 124;
+
+    @AfterPermissionGranted(RC_CAMERA_PERM2)
+    public void cameraTask2() {
+        if (EasyPermissions.hasPermissions(this, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_PHONE_STATE)) {
+            // Have permission, do the thing!
+
+            Log.e("定位权限","定位权限");
+            getMyLocation();
+
+        } else {//没有相应权限，获取相机权限
+            // Ask for one permission
+            EasyPermissions.requestPermissions(this, "获取定位权限",
+                    RC_CAMERA_PERM2, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_PHONE_STATE);
+        }
+    }
+
+    List<String> permission = new ArrayList<>();
+    private void setListener() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            permission.add(  Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED)
+        {
+            permission.add(Manifest.permission.READ_PHONE_STATE);
+        }
+
+        if (!permission.isEmpty())
+        {
+            String[] permissions = permission.toArray(new String[permission.size()]);//将集合转化成数组
+            //@onRequestPermissionsResult会接受次函数传的数据
+            ActivityCompat.requestPermissions(this, permissions, 1);
+        }else {
+            getMyLocation();
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0)
+                {
+                    for (int result : grantResults)
+                    {
+                        if (result != PackageManager.PERMISSION_GRANTED)
+                        {
+                            //Toast.makeText(this, "权限尚未全部开启，可能会影响某些功能的使用,请去设置中心开启权限!", Toast.LENGTH_SHORT).show();
+
+                            return;
+                        }
+                    }
+
+                } else{
+
+
+                }
+                break;
+            default:
+        }
+    }
+
+
+    /**
+     * 获取我的经纬度
+     */
+    private void getMyLocation() {
+
+
+        //1.获取位置管理器
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        //2.获取位置提供器，GPS或是NetWork
+        locationProvider = LocationManager.GPS_PROVIDER;
+
+        if (ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                        PackageManager.PERMISSION_GRANTED) {
+            Location location = locationManager.getLastKnownLocation(locationProvider);
+            if (location!=null){
+                //showLocation(location);
+                double latitude = location.getLatitude();//纬度
+                double longitude = location.getLongitude();//经度
+                Log.e("获取到纬度",latitude+ "");
+                Log.e("获取到经度",longitude+ "");
+                SPUtils.put(MyBaseWebUrl.this,"latitude",latitude+"");
+                SPUtils.put(MyBaseWebUrl.this,"longitude",longitude+"");
+                Geocoder gc = new Geocoder(this, Locale.getDefault());
+                List<Address> locationList = null;
+                try {
+                    locationList = gc.getFromLocation(latitude, longitude, 1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if(locationList != null && locationList.size() > 0){
+                    Address address = locationList.get(0);//得到Address实例
+                    String countryName = address.getCountryName();//得到国家名称，比方：中国
+                    String locality = address.getLocality();//得到城市名称，比方：北京市
+                    for (int i = 0; address.getAddressLine(i) != null; i++) {
+                        String addressLine = address.getAddressLine(i);//得到周边信息。包含街道等。i=0，得到街道名称
+                        SPUtils.put(MyBaseWebUrl.this,"addressLine",addressLine);
+                    }
+                }else {
+                    SPUtils.put(MyBaseWebUrl.this,"latitude","");
+                    SPUtils.put(MyBaseWebUrl.this,"longitude","");
+                    SPUtils.put(MyBaseWebUrl.this,"addressLine","");
+                }
+
+            }else{
+                SPUtils.put(MyBaseWebUrl.this,"latitude","");
+                SPUtils.put(MyBaseWebUrl.this,"longitude","");
+                SPUtils.put(MyBaseWebUrl.this,"addressLine","");
+                //locationManager.requestLocationUpdates(locationProvider, 300000, 0,mListener);
+            }
+            //locationManager.requestLocationUpdates(locationProvider, 300000, 0,mListener);
+
+        }else {
+            SPUtils.put(MyBaseWebUrl.this,"latitude","");
+            SPUtils.put(MyBaseWebUrl.this,"longitude","");
+            SPUtils.put(MyBaseWebUrl.this,"addressLine","");
+        }
+
+    }
 
     private void setGuideView() {
 
@@ -359,18 +405,17 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
     BaseBean appTime;
     private void networkAppStatTime() {
         OkGo.<String>post(HOME_URL+ UrlRes.APP_Time)
-                .tag(this)
                 .params( "responseTime",time )
                 .params( "responseAppId",appId)
                 .execute(new StringCallback(){
                     @Override
                     public void onSuccess(Response<String> response) {
                         //handleResponse(response);
-                            Log.e("Tag",response.body());
-                            appTime = JSON.parseObject(response.body(),BaseBean.class);
-                            if (appTime.isSuccess()) {
-                                isFirst = false;
-                            }
+                        Log.e("Tag",response.body());
+                        appTime = JSON.parseObject(response.body(), BaseBean.class);
+                        if (appTime.isSuccess()) {
+                            isFirst = false;
+                        }
                     }
 
                     @Override
@@ -389,7 +434,6 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
      * */
     private void netWorkIsCollection() {
         OkGo.<String>post(HOME_URL+ UrlRes.Query_IsCollection)
-                .tag(this)
                 .params( "version","1.0" )
                 .params( "collectionAppId",appId )
                 .params( "userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
@@ -437,7 +481,6 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
     /**请求收藏*/
     private void networkCollection() {
         OkGo.<String>post(HOME_URL+ UrlRes.Add_Collection)
-                .tag(this)
                 .params( "version","1.0" )
                 .params( "collectionAppId",appId )
                 .params( "userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
@@ -449,7 +492,6 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
                         if (baseBean.isSuccess()){
                             rbSc.setBackgroundResource(R.mipmap.sc_hover_icon);
                             flag = 1;
-                            T.showShort(MyApp.getInstance(),baseBean.getMsg());
                             Intent intent = new Intent();
                             intent.putExtra("refreshService","dongtai");
                             intent.setAction("refresh2");
@@ -457,7 +499,7 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
                         }else {
                             rbSc.setBackgroundResource(R.mipmap.sc_icon);
                             flag = 0;
-                            T.showShort(MyApp.getInstance(),baseBean.getMsg());
+
                         }
                     }
 
@@ -472,7 +514,6 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
     /**取消收藏*/
     private void cancelCollection() {
         OkGo.<String>post(HOME_URL+ UrlRes.Cancel_Collection)
-                .tag(this)
                 .params( "version","1.0" )
                 .params( "collectionAppId",appId )
                 .params( "userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
@@ -484,7 +525,7 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
                         if (baseBean.isSuccess()){
                             rbSc.setBackgroundResource(R.mipmap.sc_icon);
                             flag = 0;
-                            T.showShort(MyApp.getInstance(),baseBean.getMsg());
+
                             Intent intent = new Intent();
                             intent.putExtra("refreshService","dongtai");
                             intent.setAction("refresh2");
@@ -492,7 +533,7 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
                         }else {
                             rbSc.setBackgroundResource(R.mipmap.sc_hover_icon);
                             flag = 1;
-                            T.showShort(MyApp.getInstance(),baseBean.getMsg());
+
                         }
                     }
 
@@ -511,12 +552,12 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_back:
-            if (!mAgentWeb.back()){
-                ClassWebActivity.this.finish();
-            }
+                if (!mAgentWeb.back()){
+                    MyBaseWebUrl.this.finish();
+                }
                 break;
             case R.id.iv_close:
-                ClassWebActivity.this.finish();
+                MyBaseWebUrl.this.finish();
                 break;
         }
     }
@@ -552,7 +593,6 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            Log.e("ceshi","ceshi");
             boolean b = mAgentWeb.getWebCreator().getWebView().canGoBack();
             if(b){
                 rvClose.setVisibility(View.VISIBLE);
@@ -591,8 +631,8 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
 
 
             if (url.contains("http://mobile.havct.edu.cn/cas/login")) {
-                if (StringUtils.isEmpty((String)SPUtils.get(MyApp.getInstance(),"username","")) || tgc.equals("")){
-                    Intent intent = new Intent(getApplicationContext(),LoginActivity2.class);
+                if (StringUtils.isEmpty((String) SPUtils.get(MyApp.getInstance(),"username","")) || tgc.equals("")){
+                    Intent intent = new Intent(getApplicationContext(), LoginActivity2.class);
                     startActivity(intent);
                     finish();
 
@@ -613,8 +653,8 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             if (url.contains("http://mobile.havct.edu.cn/cas/login")) {
-                if (StringUtils.isEmpty((String)SPUtils.get(MyApp.getInstance(),"username","")) || tgc.equals("")){
-                    Intent intent = new Intent(getApplicationContext(),LoginActivity2.class);
+                if (StringUtils.isEmpty((String) SPUtils.get(MyApp.getInstance(),"username","")) || tgc.equals("")){
+                    Intent intent = new Intent(getApplicationContext(), LoginActivity2.class);
                     startActivity(intent);
                     finish();
 
@@ -622,13 +662,78 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
                 }
             }
 
+          /*  urldown = "";
+            urldown =url;
+            Log.e("urldown",urldown);
+            webView.loadUrl(urldown);
+            webView.setWebViewClient(new WebViewClient(){
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    view.loadUrl(url);
+                    Log.e("myurl",url);
+                    return true;
+                }
+
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                    Log.e("myurl",request.getUrl().toString());
+                    return super.shouldOverrideUrlLoading(view, request);
+
+                }
+
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    super.onPageFinished(view, url);
+
+                    Log.e("myurl","结束了");
+                    Log.e("myurl",url);
+                }
+
+                @Override
+                public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                    super.onPageStarted(view, url, favicon);
+                    Log.e("myurl","开始了");
+                    Log.e("myurl",url);
+                }
+            });
+
+            webView.setLoadFinishListener(new CLWebView.LoadFinishListener() {
+                @Override
+                public void onLoadFinish(WebView webView) {
+                    Log.e("urldown",urldown);
+
+
+                    upLoadWebInfo();
+                    String url1 = webView.getUrl();
+                    urldown = url1;
+                    sBegin = Calendar.getInstance().getTimeInMillis() + "";
+
+                    s1 = stringToDate(sBegin);
+                    Log.e("urldown",urldown);
+                    Log.e("myurl","加载结束了");
+                    Log.e("myurl",url1);
+                    String downLoadType = (String) SPUtils.get(MyBaseWebUrl.this, "downLoadType", "");
+                    DownLoadBean downLoadBean = JsonUtil.parseJson(downLoadType,DownLoadBean.class);
+                    List<String> downLoadTypeList = downLoadBean.getString();
+                    for (int i = 0; i < downLoadTypeList.size(); i++) {
+                        if(urldown.contains(downLoadTypeList.get(i))){
+                            Log.e("tag",downLoadTypeList.get(i));
+                            logOut(urldown);
+                            break;
+                        }else {
+
+                        }
+                    }
+                }
+            });*/
+
             return super.shouldOverrideUrlLoading(view, url);
         }
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
 
-            CookieUtils.syncCookie(UrlRes.HOME2_URL,"CASTGC="+tgt,getApplication());
+            CookieUtils.syncCookie("http://mobile.havct.edu.cn","CASTGC="+tgc,getApplication());
             if (!StringUtils.isEmpty(appId)){
                 start =  Calendar.getInstance().getTimeInMillis() ;
                 Log.i("Info", "start:  " + start );
@@ -731,7 +836,7 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
                 m_Dialog.dismiss();
                 //setDownloader(webView, defaultDownload);
                 tag = 1;
-                mAgentWeb = AgentWeb.with(ClassWebActivity.this)
+                mAgentWeb = AgentWeb.with(MyBaseWebUrl.this)
                         .setAgentWebParent(mLinearLayout, new LinearLayout.LayoutParams(-1, -1))
                         .useDefaultIndicator(-1, 3)//设置进度条颜色与高度，-1为默认值，高度为2，单位为dp。
                         .setWebChromeClient(mWebChromeClient)
@@ -739,7 +844,7 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
                         .setPermissionInterceptor(mPermissionInterceptor) //权限拦截 2.0.0 加入。
                         .setMainFrameErrorView(R.layout.agentweb_error_page, -1)
                         .setSecurityType(AgentWeb.SecurityType.STRICT_CHECK)
-                        .setWebLayout(new WebLayout(ClassWebActivity.this))
+                        .setWebLayout(new WebLayout4(MyBaseWebUrl.this))
                         .setOpenOtherPageWays(DefaultWebClient.OpenOtherPageWays.ASK)//打开其他应用时，弹窗咨询用户是否前往其他应用
                         .interceptUnkownUrl() //拦截找不到相关页面的Scheme
                         .setAgentWebWebSettings( getSettings())//设置 IAgentWebSettings。
@@ -759,7 +864,7 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
             //   do you work
 
             if (newProgress == 100 && start > 0){
-                 end =   Calendar.getInstance().getTimeInMillis();
+                end =   Calendar.getInstance().getTimeInMillis();
                 time =(end - start) +"";
             }
 
@@ -795,13 +900,25 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
          */
         @Override
         public boolean intercept(String url, String[] permissions, String action) {
-            Log.i("请求权限进行拦截 ", "mUrl:" + url + "  permission:" + mGson.toJson(permissions) + " action:" + action);
-            return false;
+            mAgentWeb = AgentWeb.with(MyBaseWebUrl.this)
+                    .setAgentWebParent(mLinearLayout, new LinearLayout.LayoutParams(-1, -1))
+                    .useDefaultIndicator()
+                    .setWebChromeClient(new OpenFileChromeClient())
+                    .setWebViewClient(mWebViewClient)
+                    .setMainFrameErrorView(R.layout.agentweb_error_page, -1)
+                    .setSecurityType(AgentWeb.SecurityType.STRICT_CHECK)
+                    .setWebLayout(new WebLayout4(MyBaseWebUrl.this))
+                    .interceptUnkownUrl() //拦截找不到相关页面的Scheme
+                    //.setAgentWebWebSettings(getSettings())//设置 IAgentWebSettings。
+                    .createAgentWeb()
+                    .ready()
+                    .go(url);
+            return true;
         }
     };
 
     public String getUrl() {
-        return "http://mobile.havct.edu.cn/portal/portal-app/app-8/index.html";
+        return "http://iapp.zzuli.edu.cn/portal/portal-app/app-5/index.html?isAPP=true";
     }
 
     private Gson mGson = new Gson();
@@ -824,7 +941,7 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
         @Override
         public boolean onStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength, AgentWebDownloader.Extra extra) {
             Log.i("下载链接", "onStart:" + url);
-            ViewUtils.createLoadingDialog(ClassWebActivity.this);
+            ViewUtils.createLoadingDialog(MyBaseWebUrl.this);
             extra.setOpenBreakPointDownload(true) // 是否开启断点续传
                     .setIcon(R.drawable.ic_file_download_black_24dp) //下载通知的icon
                     .setConnectTimeOut(6000) // 连接最大时长
@@ -852,7 +969,7 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
 
                 Uri shareFileUrl = FileUtil.getFileUri(getApplicationContext(), null, new File(path));
                 Log.e("path2", String.valueOf(shareFileUrl));
-                new Share2.Builder(ClassWebActivity.this)
+                new Share2.Builder(MyBaseWebUrl.this)
                         .setContentType(ShareContentType.FILE)
                         .setShareFileUri(shareFileUrl)
                         .setTitle("Share File")
@@ -865,7 +982,7 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
 
                 Uri shareFileUrl = FileUtil.getFileUri(getApplicationContext(), null, new File(path));
                 Log.e("path2", String.valueOf(shareFileUrl));
-                new Share2.Builder(ClassWebActivity.this)
+                new Share2.Builder(MyBaseWebUrl.this)
                         .setContentType(ShareContentType.FILE)
                         .setShareFileUri(shareFileUrl)
                         .setTitle("Share File")
@@ -972,7 +1089,7 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
             //关闭铃声
             SoundPoolUtils.stopRing();
             //关闭震动
-            SoundPoolUtils.virateCancle(ClassWebActivity.this);
+            SoundPoolUtils.virateCancle(MyBaseWebUrl.this);
 
         }
     }
@@ -1188,17 +1305,74 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
 
     }
     private Location location;
+    private LocationManager locationManager;
+    private String locationProvider;       //位置提供器
+
     /**手机定位坐标*/
     @SuppressLint("WrongConstant")
     public void onLoctionCoordinate(){
-        location = GpsUtils.getInstance(this).showLocation();
-        if (location != null) {
-            String address = "纬度：" + location.getLatitude() + "经度：" + location.getLongitude();
-            Log.d( "手机定位坐标",address );
-            Toast.makeText(getApplication(),address,Toast.LENGTH_SHORT).show();
-            GpsUtils.getInstance(this).removeLocationUpdatesListener();
-        }
+        String latitude =(String) SPUtils.get(MyApp.getInstance(), "latitude", "");
+        Log.e("获取坐标",latitude);
+
+        String longitude =(String) SPUtils.get(MyApp.getInstance(), "longitude", "");
+        String direction =(String) SPUtils.get(MyApp.getInstance(), "direction", "");
+        String altitude =(String) SPUtils.get(MyApp.getInstance(), "altitude", "");
+        String speed =(String) SPUtils.get(MyApp.getInstance(), "speed", "");
+        String locationWhere =(String) SPUtils.get(MyApp.getInstance(), "locationWhere", "");
+
+        String countryName =(String) SPUtils.get(MyApp.getInstance(), "country", "");
+        String countryCode =(String) SPUtils.get(MyApp.getInstance(), "countryCode", "");
+        String province =(String) SPUtils.get(MyApp.getInstance(), "province", "");
+        String city =(String) SPUtils.get(MyApp.getInstance(), "city", "");
+        String cityCode =(String) SPUtils.get(MyApp.getInstance(), "cityCode", "");
+        String district =(String) SPUtils.get(MyApp.getInstance(), "district", "");
+        String town =(String) SPUtils.get(MyApp.getInstance(), "town", "");
+        String adcode =(String) SPUtils.get(MyApp.getInstance(), "adcode", "");
+        String street =(String) SPUtils.get(MyApp.getInstance(), "street", "");
+        String streetNumber =(String) SPUtils.get(MyApp.getInstance(), "streetNumber", "");
+
+        Log.e("获取坐标2",longitude);
+        LocationBean locationBean = new LocationBean();
+        locationBean.setSuccess(true);
+        locationBean.setMessage("成功");
+        locationBean.setIsBaidu("1");
+        locationBean.setAltitude(altitude);
+        locationBean.setSignRecordEquipmentId(MobileInfoUtils.getIMEI(MyBaseWebUrl.this));
+        //locationBean.setLatitude(location.getLatitude()+"");
+        locationBean.setLatitude(latitude+"");
+        //locationBean.setLongitude(location.getLongitude()+"");
+        locationBean.setLongitude(longitude+"");
+        locationBean.setAddress((String) SPUtils.get(MyApp.getInstance(), "addressLine", ""));
+
+        locationBean.setCountryName(countryName);
+        locationBean.setCityCode(countryCode);
+        locationBean.setProvince(province);
+        locationBean.setCity(city);
+        locationBean.setCityCode(cityCode);
+        locationBean.setDistrict(district);
+        locationBean.setTown(town);
+        locationBean.setAdcode(adcode);
+        locationBean.setStreet(street);
+        locationBean.setStreetNumber(streetNumber);
+
+        Gson gson = new Gson();
+        String s = gson.toJson(locationBean);
+        String jsonParams = s;
+        String url2 = "javascript:getAndroidParams('"+jsonParams+"')";
+        Log.e("url",url2);
+        mAgentWeb.getWebCreator().getWebView().evaluateJavascript(url2, new ValueCallback<String>() {
+            @Override
+            public void onReceiveValue(String value) {
+                //此处为 js 返回的结果
+                Log.e("value",value);
+            }
+        });
+
+
     }
+
+
+
 
     /** 响铃震动提示*/
     @SuppressLint("WrongConstant")
@@ -1227,7 +1401,6 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
         try {
             userId = AesEncryptUtile.encrypt(username+ "_"+ Calendar.getInstance().getTimeInMillis(),key);
             OkGo.<String>post(HOME_URL+functionInvocationLogUrl)
-                    .tag(this)
                     .params("invocationLogAppId",appid)
                     .params("invocationLogMember",userId)
                     .params("invocationLogFunction",function)
@@ -1237,7 +1410,7 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
 
                             Log.e("js调用扫码",response.body());
 
-                            AppOrthBean appOrthBean = JsonUtil.parseJson(response.body(),AppOrthBean.class);
+                            AppOrthBean appOrthBean = JsonUtil.parseJson(response.body(), AppOrthBean.class);
                             boolean success = appOrthBean.getSuccess();
                             if(success == true){
                                 String invocationLogFunction = appOrthBean.getObj().getInvocationLogFunction();
@@ -1247,18 +1420,12 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
                                             @Override
                                             public void run() {
                                                 cameraTask();
-                                                /*qrPermission();
-                                                if (allowedScan){
-                                                    onScanQR();
-                                                }else {
-                                                    Toast.makeText(getApplicationContext(),"请允许权限后尝试",Toast.LENGTH_SHORT).show();
-                                                    qrPermission();
-                                                }*/
+
 
 
                                             }
                                         });
-                                    }else if(invocationLogFunction.equals("nativeGetLocation")){
+                                    }  else if(invocationLogFunction.equals("nativeGetLocation")){
                                         deliver.post(new Runnable() {
                                             @Override
                                             public void run() {
@@ -1276,7 +1443,13 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
 
                                 }
                             }else {
-                                ToastUtils.showToast(ClassWebActivity.this,"没有使用该功能的权限!");
+                                ToastUtils.showToast(MyBaseWebUrl.this,"没有使用该功能的权限!");
+                                /*deliver.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        onLoctionCoordinate();
+                                    }
+                                });*/
                             }
                         }
                         @Override
@@ -1295,7 +1468,7 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
 
     @AfterPermissionGranted(RC_CAMERA_PERM)
     public void cameraTask() {
-        if (EasyPermissions.hasPermissions(ClassWebActivity.this, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (EasyPermissions.hasPermissions(MyBaseWebUrl.this, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             // Have permission, do the thing!
 
             onScanQR();
@@ -1317,7 +1490,7 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
 
     @Override
     protected void onResume() {
-        //mAgentWeb.getWebLifeCycle().onResume();
+        mAgentWeb.getWebLifeCycle().onResume();
         super.onResume();
         netInsertPortal("5");
     }
@@ -1466,9 +1639,8 @@ public class ClassWebActivity extends AppCompatActivity implements GestureDetect
     private void netInsertPortal(final String insertPortalAccessLog) {
         String imei = MobileInfoUtils.getIMEI(this);
         OkGo.<String>post(HOME_URL + UrlRes.Four_Modules)
-                .tag(this)
-                .params("portalAccessLogMemberId",(String) SPUtils.get(getInstance(),"userId",""))
-                .params("portalAccessLogEquipmentId",(String) SPUtils.get(getInstance(),"imei",""))//设备ID
+                .params("portalAccessLogMemberId",(String) SPUtils.get(this,"userId",""))
+                .params("portalAccessLogEquipmentId",(String) SPUtils.get(this,"imei",""))//设备ID
                 .params("portalAccessLogTarget", insertPortalAccessLog)//访问目标
                 .params("portalAccessLogVersionNumber", (String) SPUtils.get(this,"versionName", ""))//版本号
                 .params("portalAccessLogOperatingSystem", "ANDROID")//版本号

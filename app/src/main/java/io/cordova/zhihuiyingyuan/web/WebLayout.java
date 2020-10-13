@@ -45,7 +45,7 @@ public class WebLayout implements IWebLayout {
         cookieManager.setAcceptCookie(true);
         String stgc = "CASTGC="+tgc;
         Log.i("stgc",stgc);
-        cookieManager.setCookie("http://platform.gilight.cn",stgc);
+        cookieManager.setCookie("http://mobile.havct.edu.cn",stgc);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             CookieSyncManager.getInstance().sync();
         } else {

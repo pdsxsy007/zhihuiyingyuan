@@ -48,6 +48,7 @@ import io.cordova.zhihuiyingyuan.UrlRes;
 import io.cordova.zhihuiyingyuan.bean.AddFaceBean;
 import io.cordova.zhihuiyingyuan.bean.Constants;
 import io.cordova.zhihuiyingyuan.fingerprint.FingerprintHelper;
+import io.cordova.zhihuiyingyuan.utils.AesEncryptUtile;
 import io.cordova.zhihuiyingyuan.utils.BaseActivity2;
 import io.cordova.zhihuiyingyuan.utils.BitmapHelper;
 import io.cordova.zhihuiyingyuan.utils.JsonUtil;
@@ -633,7 +634,8 @@ public class ShengWuActivity extends BaseActivity2 implements View.OnClickListen
 
     public void upToServer(String sresult){
         OkGo.<String>post(UrlRes.HOME2_URL+ UrlRes.addFaceUrl)
-                .params( "openId","123456")
+                .tag(this)
+                .params( "openId", AesEncryptUtile.openid)
                 .params( "memberId",userId)
                 .params( "img",sresult )
                 .params( "code","" )

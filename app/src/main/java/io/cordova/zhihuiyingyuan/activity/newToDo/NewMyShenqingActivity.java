@@ -99,6 +99,7 @@ public class NewMyShenqingActivity extends BaseActivity2  {
     private void netWorkSysMsgListOnLoadMore(final RefreshLayout refreshlayout) {
 
         OkGo.<String>post(UrlRes.HOME_URL + UrlRes.findUserMessagesByTypeUrl)
+                .tag(this)
                 .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
                 .params("pageSize", 15)
                 .params("type",type)
@@ -136,6 +137,7 @@ public class NewMyShenqingActivity extends BaseActivity2  {
     private void netWorkSysMsgListOnRefresh(final RefreshLayout refreshlayout) {
         num = 1;
         OkGo.<String>post(UrlRes.HOME_URL + UrlRes.findUserMessagesByTypeUrl)
+                .tag(this)
                 .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
                 .params("pageSize", 15)
                 .params("type",type)
@@ -180,6 +182,7 @@ public class NewMyShenqingActivity extends BaseActivity2  {
     OAMsgListBean2 oaMsgListBean2 = new OAMsgListBean2();
     private void netWorkOaMsgList() {
         OkGo.<String>post(UrlRes.HOME_URL + UrlRes.findUserMessagesByTypeUrl)
+                .tag(this)
                 .params("userId",(String) SPUtils.get(MyApp.getInstance(),"userId",""))
                 .params("pageSize", 15)
                 .params("type",type)

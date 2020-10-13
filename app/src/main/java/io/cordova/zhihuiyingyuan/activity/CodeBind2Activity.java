@@ -120,7 +120,7 @@ public class CodeBind2Activity extends BaseActivity2 implements View.OnClickList
             //String userName = AesEncryptUtile.decrypt(username,key) ;
             String userid = AesEncryptUtile.encrypt(personName + "_" + Calendar.getInstance().getTimeInMillis(), key);
             OkGo.<String>get(UrlRes.HOME2_URL +verificationUrl)
-                    .params("openid","123456")
+                    .params("openid",AesEncryptUtile.openid)
                     .params("memberId",userid)
                     .params("type",type0)
                     .params("verificationCode",vcode)
@@ -168,7 +168,7 @@ public class CodeBind2Activity extends BaseActivity2 implements View.OnClickList
             String personName = (String) SPUtils.get(MyApp.getInstance(), "personName", "");
             String username1 = AesEncryptUtile.encrypt(personName + "_" + Calendar.getInstance().getTimeInMillis(), key);
             OkGo.<String>get(UrlRes.HOME2_URL +sendVerificationUrl)
-                    .params("openId","123456")
+                    .params("openId",AesEncryptUtile.openid)
                     .params("dlm", username1)
                     .params("type",type0)
                     .params("contact",contact)
